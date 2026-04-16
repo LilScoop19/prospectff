@@ -6,7 +6,7 @@
   <title>Prospect — Fantasy Intelligence</title>
   <meta name="description" content="Prospect evaluates your fantasy football management across five core competencies. Enter your Sleeper username and League ID to get your report." />
   <meta property="og:title" content="Prospect — Fantasy Football Intelligence" />
-  <meta property="og:description" content="Mine every edge. Prospect for Gold." />
+  <meta property="og:description" content="Mine the data. Prospect for gold." />
   <meta property="og:url" content="https://prospectff.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -512,12 +512,12 @@
 
       <div class="eyebrow">
         <span class="eyebrow-line"></span>
-        <span class="eyebrow-text">Fantasy Intelligence</span>
+        <span class="eyebrow-text">Fantasy Football Intelligence</span>
         <span class="eyebrow-line"></span>
       </div>
 
-      <h1 class="headline">Mine every edge.<br>Own your <em>league.</em></h1>
-      <p class="subline">Prospect grades your fantasy management across five fundamentals — the things only you control.</p>
+      <h1 class="headline">Mine the data.<br>Prospect for <em>gold.</em></h1>
+      <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
 
       <!-- SEARCH CARD -->
       <div class="search-card">
@@ -568,15 +568,15 @@
         <div class="season-row">
           <span class="season-label">Season</span>
           <div class="season-pills">
-            <button class="season-pill" data-season="2022" onclick="setSeason(this)">2022</button>
-            <button class="season-pill" data-season="2023" onclick="setSeason(this)">2023</button>
-            <button class="season-pill active" data-season="2024" onclick="setSeason(this)">2024</button>
+            <button class="season-pill" data-season="2022" onclick="setSeason(this)">2023</button>
+            <button class="season-pill" data-season="2023" onclick="setSeason(this)">2024</button>
+            <button class="season-pill active" data-season="2024" onclick="setSeason(this)">2025</button>
           </div>
         </div>
 
         <!-- CTA -->
         <button class="cta-btn" id="runBtn" onclick="runReport()">
-          Run My Report <span class="cta-arrow">→</span>
+          View my GM Dashboard <span class="cta-arrow">→</span>
         </button>
         <div class="err-msg" id="errMsg"></div>
       </div>
@@ -587,7 +587,7 @@
         <div class="f-chip"><span class="f-dot" style="background:#40916c"></span>Free Agency</div>
         <div class="f-chip"><span class="f-dot" style="background:#a0adb0"></span>Trades</div>
         <div class="f-chip"><span class="f-dot" style="background:#c9a84c"></span>Start / Sit</div>
-        <div class="f-chip"><span class="f-dot" style="background:#f4d06f"></span>Roster Usage</div>
+        <div class="f-chip"><span class="f-dot" style="background:#f4d06f"></span>Roster Optimization</div>
       </div>
 
     </div>
@@ -599,7 +599,7 @@
 
   <script>
     const API = 'https://api.sleeper.app/v1';
-    let selectedSeason = '2024';
+    let selectedSeason = '2025';
 
     function setSeason(el) {
       document.querySelectorAll('.season-pill').forEach(p => p.classList.remove('active'));
