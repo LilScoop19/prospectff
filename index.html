@@ -68,6 +68,14 @@
       width: 36px;
       height: 36px;
       flex-shrink: 0;
+      object-fit: contain;
+      display: block;
+    }
+    .load-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      display: block;
     }
     .nav-wordmark {
       font-size: 1.2rem;
@@ -134,7 +142,6 @@
       width: 100%;
     }
 
-    /* eyebrow */
     .eyebrow {
       display: flex;
       align-items: center;
@@ -155,7 +162,6 @@
       text-transform: uppercase;
     }
 
-    /* headline */
     .headline {
       font-size: clamp(2.6rem, 7vw, 4.2rem);
       font-weight: 800;
@@ -177,7 +183,6 @@
       margin-bottom: 2.5rem;
     }
 
-    /* ── SEARCH CARD ── */
     .search-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -203,7 +208,6 @@
       background: var(--border);
     }
 
-    /* field group */
     .field-group {
       display: flex;
       flex-direction: column;
@@ -263,7 +267,6 @@
       line-height: 1.5;
     }
 
-    /* season row */
     .season-row {
       display: flex;
       align-items: center;
@@ -303,7 +306,6 @@
       color: var(--green2);
     }
 
-    /* CTA button */
     .cta-btn {
       width: 100%;
       background: var(--forest);
@@ -331,7 +333,6 @@
     }
     .cta-btn:hover .cta-arrow { transform: translateX(3px); }
 
-    /* error */
     .err-msg {
       font-size: 12px;
       font-weight: 500;
@@ -341,7 +342,6 @@
       text-align: center;
     }
 
-    /* ── LOADING OVERLAY ── */
     .loading-overlay {
       display: none;
       position: fixed;
@@ -390,7 +390,6 @@
       color: var(--muted);
     }
 
-    /* ── FEATURE CHIPS ── */
     .feature-row {
       display: flex;
       flex-wrap: wrap;
@@ -417,7 +416,6 @@
       flex-shrink: 0;
     }
 
-    /* ── FOOTER ── */
     .footer {
       text-align: center;
       padding: 2rem;
@@ -430,7 +428,6 @@
       font-weight: 500;
     }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
       .nav { padding: 0 1.25rem; }
       .search-card { padding: 1.5rem; border-radius: 14px; }
@@ -441,41 +438,9 @@
 </head>
 <body>
 
-  <!-- NAV -->
   <nav class="nav">
     <a href="/" class="nav-brand">
-      <!-- Prospect Logo SVG -->
-      <svg class="nav-logo" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="38" height="38" rx="9" fill="#224d37"/>
-        <path d="M4 31 Q10 25 19 26 Q28 25 34 31 L34 38 L4 38 Z" fill="#163324"/>
-        <path d="M13 20.5 Q12 23.5 12.5 28.5 L17 29.5 L21.5 28.5 L22 23.5 Q20 21 17.5 21 Q15 21 13 20.5Z" fill="#2d6a4f"/>
-        <path d="M14.5 22.5 L21 22.5" stroke="#40916c" stroke-width=".8" opacity=".5"/>
-        <ellipse cx="17" cy="13" rx="5.5" ry="5" fill="#1a3d2b"/>
-        <ellipse cx="15.5" cy="11.2" rx="2" ry="1.4" fill="#2d6a4f" opacity=".45"/>
-        <rect x="11.8" y="15.5" width="6.8" height="1.8" rx=".9" fill="#c9a84c"/>
-        <line x1="12.6" y1="16.1" x2="18.3" y2="16.1" stroke="#1a3d2b" stroke-width=".4"/>
-        <line x1="12.6" y1="16.8" x2="18.3" y2="16.8" stroke="#1a3d2b" stroke-width=".4"/>
-        <path d="M12.2 16.2 Q11.6 17.8 12.6 18.8" stroke="#c9a84c" stroke-width=".7" stroke-linecap="round" fill="none"/>
-        <path d="M13 21.5 Q10 22.5 8.5 24" stroke="#2d6a4f" stroke-width="2.8" stroke-linecap="round"/>
-        <path d="M21 22.5 Q24 21 26 20.5" stroke="#2d6a4f" stroke-width="2.8" stroke-linecap="round"/>
-        <path d="M14 29 L13 33.5" stroke="#163324" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M19.5 29 L20.5 33.5" stroke="#163324" stroke-width="2.2" stroke-linecap="round"/>
-        <rect x="11" y="33" width="5" height="1.8" rx="1" fill="#c9a84c"/>
-        <rect x="18" y="33" width="5" height="1.8" rx="1" fill="#c9a84c"/>
-        <line x1="8.5" y1="24" x2="27" y2="16.5" stroke="#7a4a1a" stroke-width="2" stroke-linecap="round"/>
-        <path d="M25.5 17.2 L29.5 14 L31 16 L27.5 18.5 Z" fill="#b0b8c0" stroke="#8899a8" stroke-width=".4"/>
-        <path d="M25.5 17.2 L23 20 L24.5 21 L27.5 18.5 Z" fill="#c8d0d8" stroke="#a0a8b0" stroke-width=".4"/>
-        <ellipse cx="30" cy="12" rx="5.5" ry="3.8" fill="rgba(244,208,111,0.15)" transform="rotate(-20 30 12)"/>
-        <ellipse cx="30" cy="12" rx="4.2" ry="2.8" fill="#e0b84f" transform="rotate(-20 30 12)"/>
-        <ellipse cx="30" cy="12" rx="4.2" ry="2.8" fill="none" stroke="#f4d06f" stroke-width=".8" transform="rotate(-20 30 12)"/>
-        <path d="M29.5 10.2 L30.8 13.8" stroke="white" stroke-width=".7" stroke-linecap="round" opacity=".7"/>
-        <path d="M28.8 11.2 L30.2 11.8" stroke="white" stroke-width=".5" opacity=".5"/>
-        <path d="M29.1 12.5 L30.5 13.1" stroke="white" stroke-width=".5" opacity=".4"/>
-        <line x1="34" y1="8.5" x2="36" y2="7" stroke="#f4d06f" stroke-width=".9" stroke-linecap="round" opacity=".6"/>
-        <line x1="35" y1="11.5" x2="37" y2="11.5" stroke="#f4d06f" stroke-width=".9" stroke-linecap="round" opacity=".5"/>
-        <line x1="33.5" y1="7" x2="34.5" y2="5" stroke="#f4d06f" stroke-width=".7" stroke-linecap="round" opacity=".4"/>
-        <line x1="33" y1="15" x2="34.5" y2="16.5" stroke="#f4d06f" stroke-width=".7" stroke-linecap="round" opacity=".35"/>
-      </svg>
+      <img src="images/logo.png" class="nav-logo" alt="Prospect Logo" />
       <span class="nav-wordmark">Prospect</span>
     </a>
     <div class="nav-right">
@@ -484,27 +449,15 @@
     </div>
   </nav>
 
-  <!-- LOADING OVERLAY -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="load-logo-row">
-      <svg width="32" height="32" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="38" height="38" rx="9" fill="#224d37"/>
-        <ellipse cx="17" cy="13" rx="5.5" ry="5" fill="#1a3d2b"/>
-        <rect x="11.8" y="15.5" width="6.8" height="1.8" rx=".9" fill="#c9a84c"/>
-        <path d="M13 20.5 Q12 23.5 12.5 28.5 L17 29.5 L21.5 28.5 L22 23.5 Q20 21 17.5 21 Q15 21 13 20.5Z" fill="#2d6a4f"/>
-        <line x1="8.5" y1="24" x2="27" y2="16.5" stroke="#7a4a1a" stroke-width="2" stroke-linecap="round"/>
-        <path d="M25.5 17.2 L29.5 14 L31 16 L27.5 18.5 Z" fill="#b0b8c0"/>
-        <ellipse cx="30" cy="12" rx="4.2" ry="2.8" fill="#e0b84f" transform="rotate(-20 30 12)"/>
-        <line x1="34" y1="8.5" x2="36" y2="7" stroke="#f4d06f" stroke-width=".9" stroke-linecap="round" opacity=".7"/>
-        <line x1="35" y1="11.5" x2="37" y2="11.5" stroke="#f4d06f" stroke-width=".9" stroke-linecap="round" opacity=".6"/>
-      </svg>
+      <img src="images/logo.png" class="load-logo" alt="Prospect Logo" />
       <span class="load-wordmark">Prospect</span>
     </div>
     <div class="load-bar-track"><div class="load-bar-fill"></div></div>
     <div class="load-msg" id="loadMsg">Connecting to Sleeper...</div>
   </div>
 
-  <!-- HERO -->
   <main class="hero">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
@@ -519,12 +472,10 @@
       <h1 class="headline">Mine the data.<br>Prospect for <em>gold.</em></h1>
       <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
 
-      <!-- SEARCH CARD -->
       <div class="search-card">
         <div class="search-card-label">Get your report</div>
 
         <div class="field-group">
-          <!-- Username -->
           <div class="field">
             <label>Sleeper Username</label>
             <div class="field-wrap">
@@ -544,7 +495,6 @@
             </div>
           </div>
 
-          <!-- League ID -->
           <div class="field">
             <label>League ID</label>
             <div class="field-wrap">
@@ -564,7 +514,6 @@
           </div>
         </div>
 
-        <!-- Season selector -->
         <div class="season-row">
           <span class="season-label">Season</span>
           <div class="season-pills">
@@ -574,14 +523,12 @@
           </div>
         </div>
 
-        <!-- CTA -->
         <button class="cta-btn" id="runBtn" onclick="runReport()">
           View my GM Dashboard <span class="cta-arrow">→</span>
         </button>
         <div class="err-msg" id="errMsg"></div>
       </div>
 
-      <!-- FEATURE CHIPS -->
       <div class="feature-row">
         <div class="f-chip"><span class="f-dot" style="background:#1a3d2b"></span>Draft Grade</div>
         <div class="f-chip"><span class="f-dot" style="background:#40916c"></span>Free Agency</div>
@@ -646,15 +593,10 @@
 
         setLoadMsg('Building your report...');
 
-        // Store data for the report page (Module 2)
         sessionStorage.setItem('prospect_user', JSON.stringify(user));
         sessionStorage.setItem('prospect_league', JSON.stringify(league));
         sessionStorage.setItem('prospect_season', selectedSeason);
 
-        // TODO: navigate to report page once Module 2 is built
-        // window.location.href = '/report.html';
-
-        // Temporary confirmation until report page is ready
         setLoadMsg('Profile verified! Report module coming soon.');
         setTimeout(() => {
           document.getElementById('loadingOverlay').classList.remove('visible');
@@ -669,7 +611,6 @@
       }
     }
 
-    // Allow Enter key to submit
     ['usernameInput', 'leagueIdInput'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') runReport();
