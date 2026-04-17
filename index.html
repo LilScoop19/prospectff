@@ -15,16 +15,15 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --forest:#1a3d2b; --forest2:#224d37;
-      --green2:#40916c; --green3:#74c69d;
+      --green2:#40916c;
       --gold:#c9a84c; --gold2:#e0b84f; --gold3:#f4d06f;
       --cream:#f8faf7; --white:#ffffff;
       --ink:#0d1b12; --ink2:#2a3b2e;
       --muted:#7a8c7e; --muted2:#a8b8ab;
-      --border:#dce8df; --surf:#f2f7f3; --surf2:#e8f0ea;
+      --border:#dce8df; --surf:#f2f7f3;
     }
     html, body { height:100%; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
 
-    /* NAV */
     .nav { position:fixed; top:0; left:0; right:0; height:62px; background:var(--forest); display:flex; align-items:center; padding:0 2.5rem; justify-content:space-between; z-index:100; border-bottom:1px solid rgba(255,255,255,0.06); }
     .nav-brand { display:flex; align-items:center; gap:11px; text-decoration:none; }
     .nav-logo { width:36px; height:36px; flex-shrink:0; object-fit:contain; display:block; }
@@ -33,7 +32,6 @@
     .nav-pill { font-size:12px; font-weight:500; color:rgba(255,255,255,0.4); padding:5px 14px; border-radius:20px; border:1px solid transparent; cursor:pointer; transition:color .15s, border-color .15s; text-decoration:none; }
     .nav-pill:hover { color:var(--gold2); border-color:rgba(201,168,76,0.25); }
 
-    /* HERO */
     .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6rem 1.5rem 4rem; position:relative; overflow:hidden; }
     .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,61,43,0.18) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 60%); pointer-events:none; }
     .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(26,61,43,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(26,61,43,0.06) 1px, transparent 1px); background-size:48px 48px; pointer-events:none; }
@@ -47,11 +45,7 @@
     .headline em { font-style:normal; color:var(--gold); }
     .subline { font-size:1rem; font-weight:400; color:var(--muted); max-width:400px; line-height:1.7; margin-bottom:2.5rem; }
 
-    /* SEARCH CARD */
     .search-card { background:var(--white); border:1px solid var(--border); border-radius:18px; padding:2rem; width:100%; max-width:460px; box-shadow:0 4px 32px rgba(13,27,18,0.07); }
-    .search-card-label { font-size:13px; font-weight:700; color:var(--ink2); margin-bottom:1.25rem; display:flex; align-items:center; gap:8px; }
-    .search-card-label::after { content:''; flex:1; height:1px; background:var(--border); }
-
     .field { display:flex; flex-direction:column; gap:6px; margin-bottom:1.25rem; }
     .field label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
     .field-wrap { position:relative; display:flex; align-items:center; }
@@ -68,7 +62,6 @@
     .cta-btn:hover .cta-arrow { transform:translateX(3px); }
     .err-msg { font-size:12px; font-weight:500; color:#b84040; margin-top:10px; min-height:18px; text-align:center; }
 
-    /* LOADING */
     .loading-overlay { display:none; position:fixed; inset:0; background:var(--cream); z-index:200; flex-direction:column; align-items:center; justify-content:center; gap:1.25rem; }
     .loading-overlay.visible { display:flex; }
     .load-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:.25rem; }
@@ -79,7 +72,6 @@
     @keyframes loadprog { 0%{width:0%} 60%{width:78%} 100%{width:96%} }
     .load-msg { font-size:13px; font-weight:500; color:var(--muted); }
 
-    /* CHIPS */
     .feature-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:2rem; }
     .f-chip { display:flex; align-items:center; gap:6px; background:var(--white); border:1px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:500; color:var(--ink2); }
     .f-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
@@ -131,7 +123,6 @@
       <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
 
       <div class="search-card">
-        <div class="search-card-label">Get your GM Dashboard</div>
         <div class="field">
           <label>Sleeper Username</label>
           <div class="field-wrap">
@@ -144,7 +135,7 @@
           </div>
         </div>
         <button class="cta-btn" id="runBtn" onclick="runReport()">
-          View my GM Dashboard <span class="cta-arrow">→</span>
+          Begin Prospecting <span class="cta-arrow">→</span>
         </button>
         <div class="err-msg" id="errMsg"></div>
       </div>
@@ -188,18 +179,13 @@
 
       document.getElementById('runBtn').disabled = true;
       document.getElementById('loadingOverlay').classList.add('visible');
+      document.getElementById('loadMsg').textContent = 'Looking up your profile...';
 
       try {
-        document.getElementById('loadMsg').textContent = 'Looking up your profile...';
         const user = await fetchJ(`${API}/user/${username}`);
         if (!user || !user.user_id) throw new Error('Username not found. Check your Sleeper username and try again.');
-
-        // Store user for dashboard page
         sessionStorage.setItem('prospect_user', JSON.stringify(user));
-
-        // Navigate to dashboard
         window.location.href = '/dashboard.html';
-
       } catch (e) {
         setErr(e.message || 'Something went wrong. Please try again.');
       }
