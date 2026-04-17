@@ -1,683 +1,1165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prospect — GM Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    :root {
-      --forest:#1a3d2b; --forest2:#224d37; --forest3:#163324;
-      --green:#2d6a4f; --green2:#40916c; --green3:#74c69d;
-      --gold:#c9a84c; --gold2:#e0b84f; --gold3:#f4d06f;
-      --cream:#f8faf7; --white:#ffffff;
-      --ink:#0d1b12; --ink2:#2a3b2e; --ink3:#3d5244;
-      --muted:#7a8c7e; --muted2:#a8b8ab;
-      --border:#dce8df; --border2:#c8d8cb;
-      --surf:#f2f7f3; --surf2:#e8f0ea;
-      /* roster position colors */
-      --pos-qb:#e8453c; --pos-rb:#2ecc71; --pos-wr:#3498db;
-      --pos-te:#e67e22; --pos-k:#9b59b6; --pos-def:#1abc9c;
-      --pos-flex:#e91e8c; --pos-bn:#a0adb0;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --forest:#1a3d2b;--forest2:#224d37;--forest3:#163324;
+      --green:#2d6a4f;--green2:#40916c;--green3:#74c69d;
+      --gold:#c9a84c;--gold2:#e0b84f;--gold3:#f4d06f;
+      --cream:#f8faf7;--white:#ffffff;
+      --ink:#0d1b12;--ink2:#2a3b2e;
+      --muted:#7a8c7e;--muted2:#a8b8ab;
+      --border:#dce8df;--border2:#c8d8cb;
+      --surf:#f2f7f3;--surf2:#e8f0ea;
+      --p1:#1a3d2b;--p2:#40916c;--p3:#a0adb0;--p4:#c9a84c;--p5:#f4d06f;
     }
-    html, body { background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh; }
+    html,body{background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
 
-    /* ── NAV ── */
-    .nav { background:var(--forest); height:62px; display:flex; align-items:center; padding:0 2rem; justify-content:space-between; position:sticky; top:0; z-index:100; border-bottom:1px solid rgba(255,255,255,0.06); }
-    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .nav-logo { width:34px; height:34px; object-fit:contain; }
-    .nav-wordmark { font-size:1.15rem; font-weight:800; color:var(--gold2); letter-spacing:-0.01em; }
-    .nav-back { font-size:13px; font-weight:500; color:rgba(255,255,255,0.45); text-decoration:none; display:flex; align-items:center; gap:5px; transition:color .15s; border:none; background:none; cursor:pointer; padding:0; }
-    .nav-back:hover { color:var(--gold2); }
+    /* NAV */
+    .nav{background:var(--forest);height:62px;display:flex;align-items:center;padding:0 2rem;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo{width:34px;height:34px;object-fit:contain}
+    .nav-wordmark{font-size:1.15rem;font-weight:800;color:var(--gold2);letter-spacing:-0.01em}
+    .nav-back{font-size:13px;font-weight:500;color:rgba(255,255,255,.45);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;border:none;background:none;cursor:pointer;padding:0}
+    .nav-back:hover{color:var(--gold2)}
 
-    /* ── LOADING ── */
-    #loadingState { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; gap:1.25rem; }
-    .load-logo-row { display:flex; align-items:center; gap:10px; }
-    .load-logo { width:32px; height:32px; object-fit:contain; }
-    .load-wordmark { font-size:1.3rem; font-weight:800; color:var(--gold); }
-    .load-bar-track { width:200px; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
-    .load-bar-fill { height:100%; background:var(--gold); border-radius:2px; animation:loadprog 2s ease-in-out infinite; }
-    @keyframes loadprog { 0%{width:0%} 60%{width:75%} 100%{width:95%} }
-    .load-msg { font-size:13px; font-weight:500; color:var(--muted); }
+    /* LOADING */
+    #loadingState{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:1.25rem}
+    .load-logo-row{display:flex;align-items:center;gap:10px}
+    .load-logo{width:32px;height:32px;object-fit:contain}
+    .load-wordmark{font-size:1.3rem;font-weight:800;color:var(--gold)}
+    .load-bar-track{width:200px;height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+    .load-bar-fill{height:100%;background:var(--gold);border-radius:2px;animation:loadprog 2s ease-in-out infinite}
+    @keyframes loadprog{0%{width:0%}60%{width:75%}100%{width:95%}}
+    .load-msg{font-size:13px;font-weight:500;color:var(--muted)}
+    #errorState{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:1rem;text-align:center;padding:2rem}
+    .error-title{font-size:1.2rem;font-weight:700;color:var(--ink)}
+    .error-msg-text{font-size:14px;color:var(--muted);max-width:360px}
+    .error-btn{background:var(--forest);color:var(--gold2);border:none;border-radius:10px;padding:11px 22px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:.5rem}
 
-    /* ── ERROR STATE ── */
-    #errorState { display:none; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; gap:1rem; text-align:center; padding:2rem; }
-    .error-icon { font-size:2rem; }
-    .error-title { font-size:1.2rem; font-weight:700; color:var(--ink); }
-    .error-msg { font-size:14px; color:var(--muted); max-width:360px; }
-    .error-btn { background:var(--forest); color:var(--gold2); border:none; border-radius:10px; padding:11px 22px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:.5rem; }
+    /* MAIN */
+    #dashContent{display:none}
+    .page-wrap{max-width:1040px;margin:0 auto;padding:0 1.5rem 4rem}
 
-    /* ── MAIN CONTENT ── */
-    #dashContent { display:none; }
-    .page-wrap { max-width:1040px; margin:0 auto; padding:0 1.5rem 4rem; }
+    /* PROFILE HERO */
+    .profile-hero{background:var(--forest);padding:2rem 2rem 2.5rem;position:relative;overflow:hidden}
+    .profile-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(201,168,76,.05) 0%,transparent 60%);pointer-events:none}
+    .hero-inner{max-width:1040px;margin:0 auto;display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;position:relative}
+    .avatar-wrap{flex-shrink:0;position:relative}
+    .avatar-img{width:72px;height:72px;border-radius:50%;border:2.5px solid var(--gold);object-fit:cover;background:var(--forest2)}
+    .avatar-initials{width:72px;height:72px;border-radius:50%;border:2.5px solid var(--gold);background:var(--forest2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--gold2)}
+    .avatar-status{width:13px;height:13px;background:#22c55e;border:2px solid var(--forest);border-radius:50%;position:absolute;bottom:3px;right:3px}
+    .hero-info{flex:1;min-width:0}
+    .hero-name{font-size:1.75rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;line-height:1.1}
+    .hero-handle{font-size:12px;color:rgba(255,255,255,.38);margin-top:2px}
+    .hero-stats{display:flex;gap:1.75rem;margin-top:1rem;flex-wrap:wrap}
+    .hstat{display:flex;flex-direction:column;gap:2px}
+    .hstat-val{font-size:1.25rem;font-weight:800;color:var(--gold2);letter-spacing:-0.02em;line-height:1}
+    .hstat-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+    .hstat-div{width:1px;height:32px;background:rgba(255,255,255,.1);align-self:center}
+    .iq-ring-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .iq-ring{width:80px;height:80px;position:relative}
+    .iq-ring svg{position:absolute;inset:0}
+    .iq-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .iq-num{font-size:1.6rem;font-weight:800;color:var(--gold2);line-height:1;letter-spacing:-0.02em}
+    .iq-sub{font-size:9px;color:rgba(255,255,255,.4);font-weight:500;text-transform:uppercase;letter-spacing:.1em}
+    .iq-grade-pill{font-size:11px;font-weight:600;background:rgba(201,168,76,.15);color:var(--gold3);padding:2px 10px;border-radius:20px;border:1px solid rgba(201,168,76,.25)}
 
-    /* ── PROFILE HERO ── */
-    .profile-hero { background:var(--forest); padding:2rem 2rem 2.5rem; position:relative; overflow:hidden; }
-    .profile-hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:rgba(201,168,76,0.2); }
-    .profile-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 90% 50%, rgba(201,168,76,0.05) 0%, transparent 60%); pointer-events:none; }
-    .hero-inner { max-width:1040px; margin:0 auto; display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap; position:relative; }
-    .avatar-wrap { flex-shrink:0; position:relative; }
-    .avatar-img { width:72px; height:72px; border-radius:50%; border:2.5px solid var(--gold); object-fit:cover; display:block; background:var(--forest2); }
-    .avatar-initials { width:72px; height:72px; border-radius:50%; border:2.5px solid var(--gold); background:var(--forest2); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:800; color:var(--gold2); flex-shrink:0; }
-    .avatar-status { width:13px; height:13px; background:#22c55e; border:2px solid var(--forest); border-radius:50%; position:absolute; bottom:3px; right:3px; }
-    .hero-info { flex:1; min-width:0; }
-    .hero-name { font-size:1.75rem; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1.1; }
-    .hero-handle { font-size:12px; color:rgba(255,255,255,0.38); margin-top:2px; font-weight:400; }
-    .hero-stats { display:flex; gap:1.75rem; margin-top:1rem; flex-wrap:wrap; }
-    .hstat { display:flex; flex-direction:column; gap:2px; }
-    .hstat-val { font-size:1.25rem; font-weight:800; color:var(--gold2); letter-spacing:-0.02em; line-height:1; }
-    .hstat-lbl { font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
-    .hstat-div { width:1px; height:32px; background:rgba(255,255,255,0.1); align-self:center; }
+    /* CONTROLS */
+    .controls-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem}
+    .controls-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:56px;flex-wrap:wrap}
+    .ctrl-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+    .ctrl-select{appearance:none;background:var(--surf);border:1.5px solid var(--border);border-radius:8px;padding:7px 32px 7px 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink);outline:none;cursor:pointer;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237a8c7e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:200px;max-width:280px}
+    .ctrl-select:focus{border-color:var(--green2)}
+    .ctrl-divider{width:1px;height:24px;background:var(--border)}
+    .ctrl-badge{font-size:11px;font-weight:600;background:var(--surf2);color:var(--muted);padding:4px 10px;border-radius:20px;white-space:nowrap}
 
-    /* ── CONTROLS BAR ── */
-    .controls-bar { background:var(--white); border-bottom:1px solid var(--border); padding:0 2rem; }
-    .controls-inner { max-width:1040px; margin:0 auto; display:flex; align-items:center; gap:1rem; height:56px; flex-wrap:wrap; }
-    .ctrl-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
-    .ctrl-select { appearance:none; background:var(--surf); border:1.5px solid var(--border); border-radius:8px; padding:7px 32px 7px 12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:var(--ink); outline:none; cursor:pointer; transition:border-color .15s; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237a8c7e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; min-width:200px; max-width:280px; }
-    .ctrl-select:focus { border-color:var(--green2); }
-    .ctrl-divider { width:1px; height:24px; background:var(--border); }
-    .ctrl-badge { font-size:11px; font-weight:600; background:var(--surf2); color:var(--muted); padding:4px 10px; border-radius:20px; white-space:nowrap; }
+    /* LAYOUT */
+    .body-wrap{padding:1.5rem 0 0}
+    .two-col{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;align-items:start}
+    @media(max-width:800px){.two-col{grid-template-columns:1fr}}
 
-    /* ── PAGE BODY ── */
-    .body-wrap { padding:1.5rem 0 0; }
+    /* TAGS */
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.5rem}
+    .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid}
+    .tag-cat{font-size:9px;font-weight:400;opacity:.55;text-transform:uppercase;letter-spacing:.06em}
+    .t-forest{background:rgba(45,106,79,.12);border-color:rgba(64,145,108,.35);color:#1e5c3a}
+    .t-gold{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.35);color:#7a5400}
+    .t-slate{background:rgba(136,153,160,.12);border-color:rgba(136,153,160,.3);color:#374a5a}
+    .t-sage{background:rgba(116,198,157,.12);border-color:rgba(116,198,157,.3);color:#1e5c3a}
+    .t-warn{background:rgba(249,184,79,.1);border-color:rgba(249,184,79,.28);color:#7a4a00}
+    .t-red{background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.25);color:#7a1a1a}
 
-    /* ── SECTION HEADER ── */
-    .section-head { display:flex; align-items:center; gap:12px; margin-bottom:1.1rem; }
-    .section-title { font-size:15px; font-weight:700; color:var(--ink); letter-spacing:-0.01em; }
-    .section-rule { flex:1; height:1px; background:var(--border); }
-    .section-meta { font-size:11px; font-weight:500; color:var(--muted); }
+    /* CARDS */
+    .card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
+    .card-head{padding:.9rem 1.25rem .75rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;justify-content:space-between}
+    .card-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+    .card-meta{font-size:11px;font-weight:500;color:var(--muted)}
+    .card-body{padding:1.25rem}
 
-    /* ── RECORD STRIP ── */
-    .record-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:1.5rem; }
-    .rec-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
-    .rec-val { font-size:1.5rem; font-weight:800; color:var(--ink); letter-spacing:-0.02em; line-height:1; }
-    .rec-lbl { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+    /* STAT GRID */
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+    .stat-card{background:var(--surf);border-radius:10px;padding:.9rem 1rem}
+    .stat-val{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-0.02em;line-height:1}
+    .stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+    .stat-sub{font-size:11px;color:var(--muted2);margin-top:2px}
 
-    /* ── ROSTER TABLE ── */
-    .roster-card { background:var(--white); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-    .roster-table { width:100%; border-collapse:collapse; }
-    .roster-table th { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; padding:.65rem 1.1rem; background:var(--surf); border-bottom:1px solid var(--border); text-align:left; }
-    .roster-table th:last-child, .roster-table td:last-child { text-align:right; }
-    .roster-table td { padding:.7rem 1.1rem; border-bottom:1px solid var(--border); vertical-align:middle; }
-    .roster-table tr:last-child td { border-bottom:none; }
-    .roster-table tr:hover td { background:var(--surf); }
+    /* PENTAGON */
+    .pentagon-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
+    .chart-box{position:relative;width:100%;max-width:340px;height:280px;margin:0 auto}
+    .context-note{font-size:12px;font-weight:500;color:var(--muted);padding:8px 12px;background:var(--surf2);border-radius:8px;border-left:3px solid var(--gold);line-height:1.55;width:100%}
+    .score-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
+    .score-item{display:flex;align-items:center;gap:8px;padding:.55rem .8rem;background:var(--surf);border-radius:8px}
+    .score-item:last-child{grid-column:1/-1}
+    .sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+    .sname{font-size:12px;font-weight:600;color:var(--ink2);flex:1}
+    .sval{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+    .sgrade{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:600;margin-left:2px}
+    .ga{background:#e5f4ec;color:#1a5c35}.gb{background:#e5edf9;color:#1a3565}.gc{background:#fdf5e3;color:#7a5400}.gd{background:#fef0f0;color:#7a1a1a}.gf{background:#f5e5e5;color:#5c1a1a}
 
-    /* bench section divider row */
-    .bench-divider td { background:var(--surf2); padding:.4rem 1.1rem; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); border-top:2px solid var(--border2); }
+    /* COMPETENCY DETAIL CARDS */
+    .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:600px){.comp-grid{grid-template-columns:1fr}}
+    .comp-card{background:var(--surf);border-radius:10px;padding:1rem;border-left:3px solid}
+    .comp-card-title{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:.3rem;display:flex;align-items:center;justify-content:space-between}
+    .comp-grade-badge{font-size:11px;font-weight:700;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .comp-detail{font-size:11px;color:var(--muted);line-height:1.55}
+    .comp-bar-bg{height:3px;background:var(--border);border-radius:2px;margin-top:.6rem}
+    .comp-bar-fill{height:100%;border-radius:2px}
 
-    /* position badge */
-    .pos-badge { display:inline-flex; align-items:center; justify-content:center; width:34px; height:22px; border-radius:5px; font-size:10px; font-weight:700; letter-spacing:.04em; flex-shrink:0; }
-    .pos-QB { background:rgba(232,69,60,0.12); color:#c0392b; }
-    .pos-RB { background:rgba(46,204,113,0.12); color:#1e8449; }
-    .pos-WR { background:rgba(52,152,219,0.12); color:#1a6fa8; }
-    .pos-TE { background:rgba(230,126,34,0.12); color:#c0712a; }
-    .pos-K  { background:rgba(155,89,182,0.12); color:#7d3c98; }
-    .pos-DEF,.pos-DST { background:rgba(26,188,156,0.12); color:#148f77; }
-    .pos-FLEX,.pos-WRRB,.pos-RBWR,.pos-WRRBTE,.pos-REC,.pos-SUPER_FLEX { background:rgba(233,30,140,0.12); color:#ad1457; }
-    .pos-BN { background:rgba(160,173,176,0.15); color:#6b7c6e; }
-    .pos-IR { background:rgba(232,69,60,0.08); color:#c0392b; }
+    /* HIGHLIGHTS */
+    .highlights-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:.25rem;scrollbar-width:none}
+    .highlights-scroll::-webkit-scrollbar{display:none}
+    .hl-card{flex-shrink:0;width:180px;background:var(--surf);border-radius:12px;padding:1rem;border:1px solid var(--border)}
+    .hl-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;font-size:15px}
+    .hl-type{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+    .hl-player{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:.2rem}
+    .hl-detail{font-size:11px;color:var(--muted);line-height:1.4}
 
-    /* player name cell */
-    .player-cell { display:flex; align-items:center; gap:10px; }
-    .player-thumb { width:36px; height:36px; border-radius:50%; object-fit:cover; background:var(--surf2); flex-shrink:0; border:1px solid var(--border); }
-    .player-thumb-initials { width:36px; height:36px; border-radius:50%; background:var(--surf2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--muted); flex-shrink:0; }
-    .player-name { font-size:13px; font-weight:600; color:var(--ink); line-height:1.2; }
-    .player-team { font-size:11px; color:var(--muted); font-weight:400; margin-top:1px; }
-    .player-status { display:inline-block; font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; margin-left:5px; text-transform:uppercase; letter-spacing:.05em; }
-    .status-OUT { background:rgba(232,69,60,0.12); color:#c0392b; }
-    .status-Q   { background:rgba(230,126,34,0.12); color:#c0712a; }
-    .status-IR  { background:rgba(155,89,182,0.12); color:#7d3c98; }
-    .status-D   { background:rgba(232,69,60,0.12); color:#c0392b; }
+    /* LUCK SECTION */
+    .luck-band{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
+    .luck-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;flex-wrap:wrap;gap:.5rem}
+    .luck-title-text{font-size:13px;font-weight:600;color:var(--ink2)}
+    .luck-badge{font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px}
+    .lbg-pos{background:#e5f4ec;color:#1a5c35}.lbg-neu{background:#fdf5e3;color:#7a5400}.lbg-neg{background:#fef0f0;color:#7a1a1a}
+    .luck-explain{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:.8rem}
+    .luck-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+    .lb-label{font-size:11px;font-weight:600;color:var(--muted);width:88px;flex-shrink:0}
+    .lb-bg{flex:1;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;position:relative}
+    .lb-fill{height:100%;border-radius:3px}
+    .lb-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2);width:38px;text-align:right}
 
-    /* empty/loading states */
-    .roster-empty { padding:3rem 1.5rem; text-align:center; color:var(--muted); font-size:13px; }
-    .roster-loading { padding:2.5rem 1.5rem; text-align:center; }
-    .mini-spinner { width:24px; height:24px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto .75rem; }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    /* VERDICT */
+    .verdict{background:var(--forest);border-radius:14px;padding:1.25rem}
+    .veyebrow{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.4rem}
+    .vheadline{font-size:1rem;font-weight:800;color:var(--gold2);line-height:1.3;margin-bottom:.5rem;letter-spacing:-0.01em}
+    .vbody{font-size:13px;color:rgba(255,255,255,.5);line-height:1.65}
+    .vrecs{list-style:none;margin-top:.8rem;display:flex;flex-direction:column;gap:.35rem}
+    .vrecs li{font-size:12px;color:rgba(255,255,255,.5);padding-left:.9rem;position:relative;line-height:1.5}
+    .vrecs li::before{content:'→';position:absolute;left:0;color:var(--gold);font-size:11px;top:1px}
 
-    /* all-leagues placeholder */
-    .all-leagues-msg { padding:3rem 1.5rem; text-align:center; }
-    .all-leagues-icon { font-size:2rem; margin-bottom:.75rem; }
-    .all-leagues-title { font-size:15px; font-weight:700; color:var(--ink); margin-bottom:.4rem; }
-    .all-leagues-sub { font-size:13px; color:var(--muted); }
+    /* ROSTER */
+    .roster-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .roster-table{width:100%;border-collapse:collapse}
+    .roster-table th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:.65rem 1.1rem;background:var(--surf);border-bottom:1px solid var(--border);text-align:left}
+    .roster-table td{padding:.7rem 1.1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+    .roster-table tr:last-child td{border-bottom:none}
+    .roster-table tr:hover td{background:var(--surf)}
+    .bench-divider td{background:var(--surf2);padding:.4rem 1.1rem;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);border-top:2px solid var(--border2)}
 
-    /* responsive */
-    @media(max-width:640px) {
-      .profile-hero { padding:1.5rem; }
-      .controls-inner { height:auto; padding:.75rem 0; gap:.6rem; }
-      .ctrl-select { min-width:160px; }
-      .body-wrap { padding:1rem 0 0; }
-      .roster-table th, .roster-table td { padding:.6rem .75rem; }
+    /* POSITION BADGES */
+    .pos-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:22px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.04em;flex-shrink:0}
+    .pos-QB{background:rgba(232,69,60,.12);color:#c0392b}
+    .pos-RB{background:rgba(46,204,113,.12);color:#1e8449}
+    .pos-WR{background:rgba(52,152,219,.12);color:#1a6fa8}
+    .pos-TE{background:rgba(230,126,34,.12);color:#c0712a}
+    .pos-K{background:rgba(155,89,182,.12);color:#7d3c98}
+    .pos-DEF,.pos-DST{background:rgba(26,188,156,.12);color:#148f77}
+    .pos-FLEX,.pos-WRRB,.pos-RBWR,.pos-WRRBTE,.pos-REC,.pos-SUPER_FLEX,.pos-SF{background:rgba(233,30,140,.12);color:#ad1457}
+    .pos-BN{background:rgba(160,173,176,.15);color:#6b7c6e}
+    .pos-IR{background:rgba(232,69,60,.08);color:#c0392b}
+    /* IDP positions */
+    .pos-DB{background:rgba(41,128,185,.12);color:#1a5276}
+    .pos-DL{background:rgba(211,84,0,.12);color:#784212}
+    .pos-LB{background:rgba(39,174,96,.12);color:#1e5c35}
+    .pos-IDP_FLEX,.pos-IDP{background:rgba(142,68,173,.12);color:#6c3483}
+    .pos-DT{background:rgba(211,84,0,.12);color:#784212}
+    .pos-DE{background:rgba(231,76,60,.12);color:#922b21}
+    .pos-CB{background:rgba(41,128,185,.12);color:#1a5276}
+    .pos-S{background:rgba(52,152,219,.12);color:#1a5276}
+
+    /* PLAYER CELL */
+    .player-cell{display:flex;align-items:center;gap:10px}
+    .player-thumb{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--surf2);flex-shrink:0;border:1px solid var(--border)}
+    .player-thumb-initials{width:36px;height:36px;border-radius:50%;background:var(--surf2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
+    .player-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.2}
+    .player-team{font-size:11px;color:var(--muted);margin-top:1px}
+    .player-status{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:5px;text-transform:uppercase;letter-spacing:.05em}
+    .status-OUT{background:rgba(232,69,60,.12);color:#c0392b}
+    .status-Q{background:rgba(230,126,34,.12);color:#c0712a}
+    .status-IR{background:rgba(155,89,182,.12);color:#7d3c98}
+    .status-D{background:rgba(232,69,60,.12);color:#c0392b}
+
+    /* SECTION HEAD */
+    .section-head{display:flex;align-items:center;gap:12px;margin-bottom:1.1rem}
+    .section-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+    .section-rule{flex:1;height:1px;background:var(--border)}
+    .section-meta{font-size:11px;font-weight:500;color:var(--muted)}
+
+    /* STANDINGS */
+    .s-rows{display:flex;flex-direction:column}
+    .s-row{display:flex;align-items:center;padding:.6rem 1.25rem;border-bottom:1px solid var(--border);gap:10px}
+    .s-row:last-child{border-bottom:none}
+    .s-row.me{background:#f2faf5}
+    .s-rank{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:16px;flex-shrink:0}
+    .s-name{flex:1;font-size:13px;font-weight:600;color:var(--ink)}
+    .s-you{font-size:9px;font-weight:700;background:var(--forest);color:var(--gold2);padding:1px 6px;border-radius:3px;margin-left:5px}
+    .s-record{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:38px;text-align:right}
+    .s-pts{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green2);width:50px;text-align:right;font-weight:500}
+
+    /* MISC */
+    .roster-empty{padding:3rem 1.5rem;text-align:center;color:var(--muted);font-size:13px}
+    .mini-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .75rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .roster-loading{padding:2.5rem;text-align:center}
+
+    @media(max-width:640px){
+      .profile-hero{padding:1.5rem}
+      .controls-inner{height:auto;padding:.75rem 0;gap:.6rem}
+      .page-wrap{padding:0 1rem 4rem}
+      .comp-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="nav">
-    <a href="/" class="nav-brand">
-      <img src="images/logo.png" class="nav-logo" alt="Prospect Logo" />
-      <span class="nav-wordmark">Prospect</span>
-    </a>
-    <button class="nav-back" onclick="window.location.href='/'">← Back</button>
-  </nav>
+<nav class="nav">
+  <a href="/" class="nav-brand">
+    <img src="images/logo.png" class="nav-logo" alt="Prospect"/>
+    <span class="nav-wordmark">Prospect</span>
+  </a>
+  <button class="nav-back" onclick="window.location.href='/'">← Back</button>
+</nav>
 
-  <!-- LOADING STATE -->
-  <div id="loadingState">
-    <div class="load-logo-row">
-      <img src="images/logo.png" class="load-logo" alt="Prospect" />
-      <span class="load-wordmark">Prospect</span>
-    </div>
-    <div class="load-bar-track"><div class="load-bar-fill"></div></div>
-    <div class="load-msg" id="loadMsg">Loading your profile...</div>
+<div id="loadingState">
+  <div class="load-logo-row">
+    <img src="images/logo.png" class="load-logo" alt="Prospect"/>
+    <span class="load-wordmark">Prospect</span>
   </div>
+  <div class="load-bar-track"><div class="load-bar-fill"></div></div>
+  <div class="load-msg" id="loadMsg">Loading your profile...</div>
+</div>
 
-  <!-- ERROR STATE -->
-  <div id="errorState">
-    <div class="error-icon">⚠</div>
-    <div class="error-title">Couldn't load your dashboard</div>
-    <div class="error-msg" id="errorMsgText">Something went wrong connecting to Sleeper. Please go back and try again.</div>
-    <button class="error-btn" onclick="window.location.href='/'">← Go Back</button>
-  </div>
+<div id="errorState">
+  <div class="error-title">Couldn't load your dashboard</div>
+  <div class="error-msg-text" id="errorMsgText">Something went wrong. Please go back and try again.</div>
+  <button class="error-btn" onclick="window.location.href='/'">← Go Back</button>
+</div>
 
-  <!-- DASHBOARD CONTENT -->
-  <div id="dashContent">
-
-    <!-- PROFILE HERO -->
-    <div class="profile-hero">
-      <div class="hero-inner">
-        <div class="avatar-wrap">
-          <div id="avatarEl"></div>
-          <div class="avatar-status"></div>
+<div id="dashContent">
+  <div class="profile-hero">
+    <div class="hero-inner">
+      <div class="avatar-wrap">
+        <div id="avatarEl"></div>
+        <div class="avatar-status"></div>
+      </div>
+      <div class="hero-info">
+        <div class="hero-name" id="heroName">—</div>
+        <div class="hero-handle" id="heroHandle"></div>
+        <div class="hero-stats" id="heroStats"></div>
+      </div>
+      <div class="iq-ring-wrap">
+        <div class="iq-ring" id="iqRing">
+          <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,0.1)" stroke-width="5.5"/><circle id="iqArc" cx="40" cy="40" r="34" stroke="#c9a84c" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="0 213" transform="rotate(-90 40 40)"/></svg>
+          <div class="iq-center"><span class="iq-num" id="iqNum">—</span><span class="iq-sub">IQ</span></div>
         </div>
-        <div class="hero-info">
-          <div class="hero-name" id="heroName">—</div>
-          <div class="hero-handle" id="heroHandle">@sleeper</div>
-          <div class="hero-stats" id="heroStats"></div>
-        </div>
+        <span class="iq-grade-pill" id="iqGrade">—</span>
       </div>
     </div>
+  </div>
 
-    <!-- CONTROLS BAR -->
-    <div class="controls-bar">
-      <div class="controls-inner">
-        <span class="ctrl-label">League</span>
-        <select class="ctrl-select" id="leagueSelect" onchange="onLeagueChange()">
-          <option value="ALL">All Leagues</option>
-        </select>
-        <div class="ctrl-divider"></div>
-        <span class="ctrl-label">Season</span>
-        <select class="ctrl-select" id="seasonSelect" onchange="onSeasonChange()" style="min-width:140px;max-width:160px">
-          <option value="ALL">All Seasons</option>
-          <option value="2025" selected>2025</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-        </select>
-        <div class="ctrl-divider"></div>
-        <span class="ctrl-badge" id="leagueCountBadge">Loading...</span>
-      </div>
+  <div class="controls-bar">
+    <div class="controls-inner">
+      <span class="ctrl-label">League</span>
+      <select class="ctrl-select" id="leagueSelect" onchange="onLeagueChange()">
+        <option value="ALL">All Leagues</option>
+      </select>
+      <div class="ctrl-divider"></div>
+      <span class="ctrl-label">Season</span>
+      <select class="ctrl-select" id="seasonSelect" onchange="onSeasonChange()" style="min-width:140px;max-width:160px">
+        <option value="ALL">All Seasons</option>
+        <option value="2025" selected>2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+      <div class="ctrl-divider"></div>
+      <span class="ctrl-badge" id="leagueCountBadge">Loading...</span>
     </div>
+  </div>
 
-    <!-- PAGE BODY -->
-    <div class="page-wrap">
-      <div class="body-wrap">
+  <div class="page-wrap">
+    <div class="body-wrap">
 
-        <!-- RECORD STRIP (shown when a league is selected) -->
-        <div id="recordStrip" style="display:none; margin-bottom:1.5rem;">
-          <div class="record-strip" id="recordCards"></div>
-        </div>
-
-        <!-- ROSTER SECTION -->
+      <!-- TAGS -->
+      <div style="margin:1.5rem 0 0">
         <div class="section-head">
-          <span class="section-title" id="rosterSectionTitle">Roster</span>
+          <span class="section-title">Manager Profile</span>
           <div class="section-rule"></div>
-          <span class="section-meta" id="rosterMeta"></span>
         </div>
-        <div class="roster-card">
-          <div id="rosterContent">
-            <div class="roster-loading">
-              <div class="mini-spinner"></div>
-              <div style="font-size:13px;color:var(--muted)">Loading roster...</div>
+        <div class="tags-wrap" id="tagsWrap"></div>
+      </div>
+
+      <div class="two-col">
+        <!-- LEFT -->
+        <div>
+
+          <!-- GENERAL STATS -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Season Summary</span>
+              <span class="card-meta" id="summaryMeta"></span>
+            </div>
+            <div class="card-body">
+              <div class="stat-grid" id="statGrid">
+                <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Loading</div></div>
+              </div>
             </div>
           </div>
+
+          <!-- PENTAGON -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">The Five Fundamentals</span>
+              <span class="card-meta">What you control</span>
+            </div>
+            <div class="card-body">
+              <div class="pentagon-wrap">
+                <div class="context-note">Your Prospect IQ is calculated from these five scores only. Schedule luck is tracked separately and does not affect your grade.</div>
+                <div class="chart-box">
+                  <canvas id="pentChart" role="img" aria-label="Pentagon radar chart of five fundamental scores"></canvas>
+                </div>
+                <div class="score-grid" id="scoreGrid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPETENCY DETAIL -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Competency Breakdown</span>
+              <span class="card-meta">How each grade was calculated</span>
+            </div>
+            <div class="card-body">
+              <div class="comp-grid" id="compGrid"></div>
+            </div>
+          </div>
+
+          <!-- HIGHLIGHTS -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Season Highlights</span>
+              <span class="card-meta">Notable draft & roster moments</span>
+            </div>
+            <div class="card-body" style="padding:1rem 1.25rem">
+              <div class="highlights-scroll" id="highlightsRow"></div>
+            </div>
+          </div>
+
+          <!-- LUCK -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Schedule Luck</span>
+              <span class="card-meta">Context only — not in your IQ score</span>
+            </div>
+            <div class="card-body" style="padding:1rem 1.25rem">
+              <div class="luck-band" id="luckBand">
+                <div style="font-size:13px;color:var(--muted)">Select a league to see luck analysis.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROSTER -->
+          <div style="margin-top:.5rem">
+            <div class="section-head">
+              <span class="section-title" id="rosterTitle">Active Roster</span>
+              <div class="section-rule"></div>
+              <span class="section-meta" id="rosterMeta"></span>
+            </div>
+            <div class="roster-card">
+              <div id="rosterContent">
+                <div class="roster-loading"><div class="mini-spinner"></div><div style="font-size:13px;color:var(--muted)">Select a league to view your roster.</div></div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
+        <!-- RIGHT SIDEBAR -->
+        <div>
+
+          <!-- VERDICT -->
+          <div class="verdict" id="verdictBlock">
+            <div class="veyebrow">The Verdict</div>
+            <div class="vheadline" id="verdictHeadline">Analyzing your season...</div>
+            <div class="vbody" id="verdictBody"></div>
+            <ul class="vrecs" id="verdictRecs"></ul>
+          </div>
+
+          <!-- STANDINGS -->
+          <div class="card" style="margin-top:1.25rem">
+            <div class="card-head"><span class="card-title">League Standings</span></div>
+            <div class="s-rows" id="standingsRows">
+              <div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:13px">Select a league above.</div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
+  </div>
+</div>
 
-  </div><!-- end dashContent -->
+<script>
+const API='https://api.sleeper.app/v1';
+const CDN='https://sleepercdn.com/avatars/thumbs/';
+const PCDN='https://sleepercdn.com/content/nfl/players/thumb/';
 
-  <script>
-    const API = 'https://api.sleeper.app/v1';
-    const CDN = 'https://sleepercdn.com/avatars/thumbs/';
-    const PLAYER_CDN = 'https://sleepercdn.com/content/nfl/players/thumb/';
+let currentUser=null,allLeagues=[],allPlayers={};
+let currentLeagueId='ALL',currentSeason='2025';
+let pentChart=null;
 
-    let currentUser = null;
-    let allLeagues = [];
-    let allPlayers = {};
-    let currentLeagueId = 'ALL';
-    let currentSeason = '2025';
+const POS_MAP={QB:'QB',RB:'RB',WR:'WR',TE:'TE',K:'K',DEF:'DEF',DST:'DEF',FLEX:'FLEX',WRRB:'FLEX',RBWR:'FLEX',WRRBTE:'FLEX',REC:'FLEX',SUPER_FLEX:'SF',BN:'BN',IR:'IR',IDP_FLEX:'IDP',DB:'DB',DL:'DL',LB:'LB',DT:'DT',DE:'DE',CB:'CB',S:'S'};
+const STATUS_MAP={Out:'OUT',Questionable:'Q','Injured Reserve':'IR',Doubtful:'D'};
 
-    // ── POSITION DISPLAY MAPPING ──
-    const POS_LABEL = {
-      QB:'QB', RB:'RB', WR:'WR', TE:'TE', K:'K',
-      DEF:'DEF', DST:'DEF', FLEX:'FLEX',
-      WRRB:'FLEX', RBWR:'FLEX', WRRBTE:'FLEX',
-      REC:'FLEX', SUPER_FLEX:'SF', BN:'BN', IR:'IR'
+function setMsg(m){document.getElementById('loadMsg').textContent=m}
+function showError(m){document.getElementById('loadingState').style.display='none';document.getElementById('errorState').style.display='flex';document.getElementById('errorMsgText').textContent=m}
+function showDash(){document.getElementById('loadingState').style.display='none';document.getElementById('errorState').style.display='none';document.getElementById('dashContent').style.display='block'}
+
+async function fetchJ(url){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+
+// ── INIT ──
+async function init(){
+  const stored=sessionStorage.getItem('prospect_user');
+  if(!stored){
+    const p=new URLSearchParams(window.location.search);
+    const u=p.get('user');
+    if(u){try{setMsg('Looking up '+u+'...');currentUser=await fetchJ(`${API}/user/${u}`)}catch(e){return showError('Could not find user "'+u+'".')}}
+    else return showError('No user data found. Please go back and enter your username.');
+  } else {
+    currentUser=JSON.parse(stored);
+  }
+  if(!currentUser?.user_id)return showError('Invalid user data.');
+
+  renderHero(currentUser);
+  setMsg('Loading your leagues...');
+
+  try{
+    allLeagues=await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
+    if(!Array.isArray(allLeagues))allLeagues=[];
+  }catch(e){allLeagues=[]}
+
+  populateLeagueDropdown(allLeagues);
+  setMsg('Fetching player database...');
+
+  try{allPlayers=await fetchJ(`${API}/players/nfl`)}catch(e){allPlayers={}}
+
+  showDash();
+
+  if(allLeagues.length>0){
+    // Default to ALL LEAGUES aggregated view
+    currentLeagueId='ALL';
+    document.getElementById('leagueSelect').value='ALL';
+    await loadAllLeagues();
+  }
+}
+
+// ── HERO ──
+function renderHero(user){
+  document.title=(user.display_name||user.username)+' — Prospect';
+  document.getElementById('heroName').textContent=user.display_name||user.username;
+  document.getElementById('heroHandle').textContent='@'+(user.username||'');
+  const el=document.getElementById('avatarEl');
+  if(user.avatar){
+    const img=document.createElement('img');
+    img.className='avatar-img';img.src=CDN+user.avatar;img.alt=user.display_name||user.username;
+    img.onerror=()=>{el.innerHTML=initialsAvatar(user)};
+    el.appendChild(img);
+  } else {el.innerHTML=initialsAvatar(user)}
+}
+function initialsAvatar(u){return`<div class="avatar-initials">${(u.display_name||u.username||'?').slice(0,2).toUpperCase()}</div>`}
+
+function updateIQRing(score){
+  const circ=2*Math.PI*34,dash=(circ*(score/100)).toFixed(1);
+  document.getElementById('iqArc').setAttribute('stroke-dasharray',dash+' '+circ.toFixed(1));
+  document.getElementById('iqNum').textContent=score;
+  const g=getGrade(score);
+  document.getElementById('iqGrade').textContent=g+'-Grade';
+}
+
+function updateHeroStats(w,l,pf,rank,total){
+  const items=[{val:`${w}–${l}`,lbl:'Record'},{val:`${rank}/${total}`,lbl:'Standing'},{val:parseFloat(pf).toFixed(1),lbl:'Pts For'}];
+  document.getElementById('heroStats').innerHTML=items.map((s,i)=>
+    `${i>0?'<div class="hstat-div"></div>':''}<div class="hstat"><span class="hstat-val">${s.val}</span><span class="hstat-lbl">${s.lbl}</span></div>`
+  ).join('');
+}
+
+function updateHeroStatsMulti(totalW,totalL,totalPF,leagueCount){
+  const winPct=totalW+totalL>0?Math.round((totalW/(totalW+totalL))*100):0;
+  const items=[
+    {val:`${totalW}–${totalL}`,lbl:'Overall Record'},
+    {val:`${winPct}%`,lbl:'Win Rate'},
+    {val:leagueCount,lbl:'Leagues'},
+    {val:totalPF.toFixed(0),lbl:'Total PF'},
+  ];
+  document.getElementById('heroStats').innerHTML=items.map((s,i)=>
+    `${i>0?'<div class="hstat-div"></div>':''}<div class="hstat"><span class="hstat-val">${s.val}</span><span class="hstat-lbl">${s.lbl}</span></div>`
+  ).join('');
+}
+
+// ── DROPDOWNS ──
+function populateLeagueDropdown(leagues){
+  const sel=document.getElementById('leagueSelect');
+  while(sel.options.length>1)sel.remove(1);
+  leagues.forEach(lg=>{
+    const o=document.createElement('option');
+    o.value=lg.league_id;o.textContent=lg.name||'Unnamed League';
+    sel.appendChild(o);
+  });
+  document.getElementById('leagueCountBadge').textContent=
+    leagues.length===0?'No leagues found':`${leagues.length} league${leagues.length!==1?'s':''} · ${currentSeason}`;
+}
+
+async function onLeagueChange(){
+  const sel=document.getElementById('leagueSelect');
+  currentLeagueId=sel.value;
+  if(currentLeagueId==='ALL'){await loadAllLeagues()}
+  else{await loadSingleLeague(currentLeagueId)}
+}
+
+async function onSeasonChange(){
+  const sel=document.getElementById('seasonSelect');
+  currentSeason=sel.value;
+  if(currentSeason==='ALL'){document.getElementById('leagueCountBadge').textContent='All seasons';return}
+  setRosterLoading();
+  try{
+    allLeagues=await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
+    if(!Array.isArray(allLeagues))allLeagues=[];
+  }catch(e){allLeagues=[]}
+  populateLeagueDropdown(allLeagues);
+  currentLeagueId='ALL';
+  document.getElementById('leagueSelect').value='ALL';
+  if(allLeagues.length>0)await loadAllLeagues();
+}
+
+// ── LOAD ALL LEAGUES (aggregated) ──
+async function loadAllLeagues(){
+  if(allLeagues.length===0){renderEmptyState();return}
+  setRosterLoading();
+
+  const results=await Promise.all(allLeagues.map(lg=>loadLeagueBundle(lg.league_id)));
+
+  // Aggregate stats
+  let totalW=0,totalL=0,totalT=0,totalPF=0,firstPlaceCount=0,playoffCount=0;
+  let allDraftPicks=[],allTxns=[],allWeeklyData=[];
+
+  results.forEach(r=>{
+    if(!r)return;
+    totalW+=r.wins;totalL+=r.losses;totalT+=r.ties;
+    totalPF+=r.pf;
+    if(r.rank===1)firstPlaceCount++;
+    if(r.madePlayoffs)playoffCount++;
+    allDraftPicks.push(...r.draftPicks);
+    allTxns.push(...r.transactions);
+    allWeeklyData.push(...r.weeklyData);
+  });
+
+  const leagueCount=results.filter(Boolean).length;
+  updateHeroStatsMulti(totalW,totalL,totalPF,leagueCount);
+
+  // Summary stats
+  const winPct=totalW+totalL>0?Math.round((totalW/(totalW+totalL))*100):0;
+  const playoffPct=leagueCount>0?Math.round((playoffCount/leagueCount)*100):0;
+  const firstPct=leagueCount>0?Math.round((firstPlaceCount/leagueCount)*100):0;
+
+  renderStatGrid([
+    {val:`${totalW}–${totalL}`,lbl:'Overall Record',sub:'across all leagues'},
+    {val:`${winPct}%`,lbl:'Win Rate',sub:`${totalW} wins`},
+    {val:`${playoffPct}%`,lbl:'Playoff Rate',sub:`${playoffCount}/${leagueCount} leagues`},
+    {val:`${firstPct}%`,lbl:'1st Place Rate',sub:`${firstPlaceCount} championship${firstPlaceCount!==1?'s':''}`},
+    {val:totalPF.toFixed(0),lbl:'Total Points',sub:'all leagues combined'},
+    {val:leagueCount,lbl:'Leagues',sub:currentSeason+' season'},
+  ]);
+
+  document.getElementById('summaryMeta').textContent=`All ${leagueCount} leagues · ${currentSeason}`;
+
+  // Compute competency scores
+  const scores=computeScores(results,allDraftPicks,allTxns,allWeeklyData,totalW,totalL,leagueCount);
+  const iqScore=Math.round(scores.draft*0.22+scores.fa*0.15+scores.trade*0.13+scores.startSit*0.30+scores.roster*0.20);
+  updateIQRing(iqScore);
+  renderPentagon(scores);
+  renderScoreGrid(scores);
+  renderCompGrid(scores,allDraftPicks,allTxns,allWeeklyData,results);
+  renderTags(scores,winPct,allTxns,allDraftPicks,totalW,totalL);
+  renderHighlights(allDraftPicks,allTxns,allWeeklyData);
+
+  // Luck for ALL leagues
+  renderLuckMulti(results,totalW,totalL);
+
+  // Verdict
+  renderVerdict(scores,iqScore,totalW,totalL,winPct,playoffPct,firstPlaceCount,leagueCount);
+
+  // Clear standings for ALL view
+  document.getElementById('standingsRows').innerHTML=`<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:13px">Select a specific league to see standings.</div>`;
+
+  // Roster
+  if(results[0]?.roster){
+    const r=results[0];
+    document.getElementById('rosterTitle').textContent='Active Roster';
+    document.getElementById('rosterMeta').textContent=`${r.league.name} · ${(r.roster.players||[]).length} players`;
+    renderRoster(r.roster,r.rosterPositions,allPlayers);
+  } else {
+    document.getElementById('rosterContent').innerHTML=`<div class="roster-empty">Select a specific league to view your roster.</div>`;
+  }
+}
+
+// ── LOAD SINGLE LEAGUE ──
+async function loadSingleLeague(leagueId){
+  setRosterLoading();
+  const r=await loadLeagueBundle(leagueId);
+  if(!r){document.getElementById('rosterContent').innerHTML='<div class="roster-empty">Failed to load league data.</div>';return}
+
+  updateHeroStats(r.wins,r.losses,r.pf,r.rank,r.totalTeams);
+  renderStatGrid([
+    {val:`${r.wins}–${r.losses}`,lbl:'Record'},
+    {val:`${r.rank}/${r.totalTeams}`,lbl:'Standing'},
+    {val:r.pf.toFixed(1),lbl:'Points For'},
+    {val:`${Math.round((r.wins/(r.wins+r.losses||1))*100)}%`,lbl:'Win Rate'},
+  ]);
+  document.getElementById('summaryMeta').textContent=r.league.name+' · '+currentSeason;
+
+  const scores=computeScores([r],r.draftPicks,r.transactions,r.weeklyData,r.wins,r.losses,1);
+  const iqScore=Math.round(scores.draft*0.22+scores.fa*0.15+scores.trade*0.13+scores.startSit*0.30+scores.roster*0.20);
+  updateIQRing(iqScore);
+  renderPentagon(scores);
+  renderScoreGrid(scores);
+  renderCompGrid(scores,r.draftPicks,r.transactions,r.weeklyData,[r]);
+  renderTags(scores,Math.round((r.wins/(r.wins+r.losses||1))*100),r.transactions,r.draftPicks,r.wins,r.losses);
+  renderHighlights(r.draftPicks,r.transactions,r.weeklyData);
+  renderLuckSingle(r);
+  renderVerdict(scores,iqScore,r.wins,r.losses,Math.round((r.wins/(r.wins+r.losses||1))*100),r.madePlayoffs?100:0,r.rank===1?1:0,1);
+  renderStandings(r.allRosters,r.leagueUsers,r.league);
+
+  document.getElementById('rosterTitle').textContent='Active Roster';
+  document.getElementById('rosterMeta').textContent=`${r.league.name} · ${(r.roster?.players||[]).length} players`;
+  if(r.roster)renderRoster(r.roster,r.rosterPositions,allPlayers);
+}
+
+// ── LOAD LEAGUE BUNDLE — all data for one league ──
+async function loadLeagueBundle(leagueId){
+  try{
+    const [rosters,leagueUsers,league,drafts,txns]=await Promise.all([
+      fetchJ(`${API}/league/${leagueId}/rosters`),
+      fetchJ(`${API}/league/${leagueId}/users`),
+      fetchJ(`${API}/league/${leagueId}`),
+      fetchJ(`${API}/league/${leagueId}/drafts`).catch(()=>[]),
+      fetchJ(`${API}/league/${leagueId}/transactions/1`).catch(()=>[]),
+    ]);
+
+    const myRoster=rosters.find(r=>r.owner_id===currentUser.user_id);
+    if(!myRoster)return null;
+
+    const sorted=[...rosters].sort((a,b)=>{
+      const aw=a.settings?.wins||0,bw=b.settings?.wins||0;
+      if(bw!==aw)return bw-aw;
+      return parseFloat(b.settings?.fpts||0)-parseFloat(a.settings?.fpts||0);
+    });
+    const rank=sorted.findIndex(r=>r.roster_id===myRoster.roster_id)+1;
+    const wins=myRoster.settings?.wins||0;
+    const losses=myRoster.settings?.losses||0;
+    const ties=myRoster.settings?.ties||0;
+    const pf=parseFloat(myRoster.settings?.fpts||0)+parseFloat((myRoster.settings?.fpts_decimal||0)/100);
+    const pa=parseFloat(myRoster.settings?.fpts_against||0);
+    const totalTeams=rosters.length;
+    const playoffSpots=league.settings?.playoff_teams||4;
+    const madePlayoffs=rank<=playoffSpots;
+    const avgPF=rosters.reduce((s,r)=>s+parseFloat(r.settings?.fpts||0),0)/totalTeams;
+
+    // Draft picks
+    let draftPicks=[];
+    if(drafts.length>0){
+      try{
+        const picks=await fetchJ(`${API}/draft/${drafts[0].draft_id}/picks`);
+        draftPicks=picks.filter(p=>p.picked_by===currentUser.user_id);
+      }catch(e){}
+    }
+
+    // Weekly matchup data (weeks 1-14)
+    const weekNums=[1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+    const weeklyRaw=await Promise.all(weekNums.map(w=>fetchJ(`${API}/league/${leagueId}/matchups/${w}`).catch(()=>[])));
+    const weeklyData=weeklyRaw.map((week,i)=>{
+      if(!week||!week.length)return null;
+      const mine=week.find(m=>m.roster_id===myRoster.roster_id);
+      if(!mine)return null;
+      return{week:i+1,points:mine.points||0,starters:mine.starters||[],players:mine.players||[],playersPoints:mine.players_points||{}};
+    }).filter(Boolean);
+
+    return{
+      league,roster:myRoster,allRosters:rosters,leagueUsers,
+      wins,losses,ties,pf,pa,rank,totalTeams,madePlayoffs,avgPF,
+      rosterPositions:league.roster_positions||[],
+      draftPicks,transactions:Array.isArray(txns)?txns:[],weeklyData
     };
-    const STATUS_LABELS = { Out:'OUT', Questionable:'Q', 'Injured Reserve':'IR', Doubtful:'D' };
+  }catch(e){console.error('Bundle error',e);return null}
+}
 
-    function setLoadMsg(msg) { document.getElementById('loadMsg').textContent = msg; }
+// ── COMPUTE SCORES ──
+function computeScores(results,draftPicks,txns,weeklyData,wins,losses,leagueCount){
+  // 1. DRAFT — compare pick round vs season performance
+  let draftScore=65;
+  if(draftPicks.length>0){
+    // Early pick efficiency: rounds 1-3 are high investment; penalize busts
+    const earlyPicks=draftPicks.filter(p=>p.round<=3);
+    const latePicks=draftPicks.filter(p=>p.round>=5);
+    // Use metadata.years_exp as proxy for potential — absent = rookie = upside
+    // Primary signal: season finish rank relative to draft position
+    const totalPicks=draftPicks.length;
+    const earlyRatio=earlyPicks.length/Math.max(totalPicks,1);
+    // Look for sleeper picks (late round, position skill positions)
+    const sleeperPositions=['QB','RB','WR','TE'];
+    const sleeperPicks=latePicks.filter(p=>sleeperPositions.includes(p.metadata?.position));
+    // Score based on distribution and diversity
+    const hasEarlySkill=earlyPicks.some(p=>['RB','WR','TE'].includes(p.metadata?.position));
+    draftScore=55+(hasEarlySkill?15:0)+(sleeperPicks.length>2?10:sleeperPicks.length>0?5:0)+Math.min(15,totalPicks);
+    draftScore=Math.min(95,Math.max(40,draftScore));
 
-    function showError(msg) {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display = 'flex';
-      document.getElementById('errorMsgText').textContent = msg;
+    // Adjust by win rate
+    const wr=wins/(wins+losses||1);
+    draftScore=Math.round(draftScore*0.6+wr*100*0.4);
+  } else {
+    // No draft data — proxy from wins
+    const wr=wins/(wins+losses||1);
+    draftScore=Math.round(45+wr*40);
+  }
+
+  // 2. FREE AGENCY
+  const adds=txns.filter(t=>t.adds&&Object.values(t.adds).some(v=>v===results.find?.(r=>r?.roster?.roster_id)?.roster?.roster_id||true));
+  const addCount=txns.filter(t=>t.type==='waiver'||t.type==='free_agent').length;
+  const dropCount=txns.filter(t=>t.drops&&Object.keys(t.drops||{}).length>0).length;
+  let faScore=addCount>10?83:addCount>6?72:addCount>3?61:50;
+  // Boost if winning with high activity
+  if(wins>losses&&addCount>5)faScore=Math.min(90,faScore+8);
+  faScore=Math.round(faScore);
+
+  // 3. TRADES
+  const trades=txns.filter(t=>t.type==='trade');
+  const tradeCount=trades.length;
+  const wr=wins/(wins+losses||1);
+  let tradeScore;
+  if(tradeCount===0){tradeScore=wr>0.55?70:wr>0.45?55:40}
+  else{tradeScore=tradeCount>4?80:tradeCount>2?70:60;if(wr>0.55)tradeScore=Math.min(90,tradeScore+10)}
+  tradeScore=Math.round(tradeScore);
+
+  // 4. START/SIT EFFICIENCY — compare actual vs optimal lineup each week
+  let sitScore=65;
+  if(weeklyData.length>0){
+    const efficiencies=weeklyData.map(week=>{
+      const pts=week.playersPoints;
+      if(!pts||Object.keys(pts).length===0)return null;
+      const allScores=Object.values(pts).map(Number).filter(n=>!isNaN(n)&&n>0);
+      if(allScores.length===0)return null;
+      const starterCount=week.starters.filter(id=>id&&id!=='0').length||9;
+      const actualScore=week.points||0;
+      allScores.sort((a,b)=>b-a);
+      const optimalScore=allScores.slice(0,starterCount).reduce((s,v)=>s+v,0);
+      if(optimalScore===0)return null;
+      return Math.min(1,actualScore/optimalScore);
+    }).filter(Boolean);
+    if(efficiencies.length>0){
+      const avg=efficiencies.reduce((s,v)=>s+v,0)/efficiencies.length;
+      sitScore=Math.round(avg*100);
+      // Scale: 95%+ = 90, 90%+ = 80, 85%+ = 70, etc.
+      sitScore=Math.round(Math.min(95,Math.max(35,sitScore)));
     }
+  }
 
-    function showDash() {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display = 'none';
-      document.getElementById('dashContent').style.display = 'block';
+  // 5. ROSTER OPTIMIZATION
+  const firstResult=results[0];
+  const myRoster=firstResult?.roster;
+  const rosterPositions=firstResult?.rosterPositions||[];
+  const benchSlots=rosterPositions.filter(p=>p==='BN').length;
+  const irSlots=rosterPositions.filter(p=>p==='IR').length;
+  const activeBench=(myRoster?.players||[]).length-(myRoster?.starters||[]).length;
+  const irUsed=(myRoster?.reserve||[]).length;
+  const benchFill=benchSlots>0?Math.min(1,activeBench/benchSlots):0.5;
+  const irOpt=irSlots>0?(irUsed/irSlots):0.5;
+  let rosterScore=Math.round(benchFill*50+irOpt*25+Math.min(25,addCount*2));
+  rosterScore=Math.min(95,Math.max(35,rosterScore));
+
+  return{draft:draftScore,fa:faScore,trade:tradeScore,startSit:sitScore,roster:rosterScore,
+    _addCount:addCount,_tradeCount:tradeCount,_weeklyEfficiencies:weeklyData.length};
+}
+
+// ── GRADE HELPERS ──
+function getGrade(s){return s>=90?'A+':s>=83?'A':s>=75?'B+':s>=68?'B':s>=60?'C+':s>=52?'C':s>=44?'D':'F'}
+function gradeColor(s){return s>=75?'#1e8449':s>=60?'#1a6fa8':s>=44?'#c0712a':'#c0392b'}
+function gradeCls(s){return s>=83?'ga':s>=68?'gb':s>=52?'gc':s>=40?'gd':'gf'}
+
+// ── RENDER STAT GRID ──
+function renderStatGrid(items){
+  document.getElementById('statGrid').innerHTML=items.map(s=>
+    `<div class="stat-card"><div class="stat-val">${s.val}</div><div class="stat-lbl">${s.lbl}</div>${s.sub?`<div class="stat-sub">${s.sub}</div>`:''}</div>`
+  ).join('');
+}
+
+// ── PENTAGON ──
+function renderPentagon(scores){
+  const labels=['Draft','Free Agency','Trades','Start / Sit','Roster Opt.'];
+  const data=[scores.draft,scores.fa,scores.trade,scores.startSit,scores.roster];
+  const colors=['#1a3d2b','#40916c','#a0adb0','#c9a84c','#c8a020'];
+
+  if(pentChart){pentChart.destroy();pentChart=null}
+  const ctx=document.getElementById('pentChart');
+  pentChart=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[
+        {label:'League Avg',data:[65,65,65,65,65],borderColor:'rgba(160,173,176,0.4)',backgroundColor:'rgba(160,173,176,0.05)',borderWidth:1.5,borderDash:[5,4],pointRadius:0,pointHoverRadius:0},
+        {label:'Your Score',data,borderColor:'#40916c',backgroundColor:'rgba(26,61,43,0.12)',borderWidth:2.5,
+          pointBackgroundColor:colors,pointBorderColor:'#ffffff',pointBorderWidth:2,pointRadius:5,pointHoverRadius:7}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:9,family:'JetBrains Mono'},color:'rgba(122,140,126,0.7)',backdropColor:'transparent',callback:v=>v===0?'':v},grid:{color:'rgba(220,232,223,0.9)',lineWidth:1},angleLines:{color:'rgba(220,232,223,0.9)',lineWidth:1},pointLabels:{font:{size:11,family:'Inter',weight:'600'},color:colors,padding:12}}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a3d2b',titleColor:'#e0b84f',bodyColor:'rgba(255,255,255,0.65)',borderColor:'rgba(201,168,76,0.25)',borderWidth:1,padding:10,titleFont:{family:'Inter',size:12,weight:'700'},bodyFont:{family:'JetBrains Mono',size:11},callbacks:{title:i=>i[0].label,label:i=>i.dataset.label==='League Avg'?'League avg: 65':`Your score: ${i.raw} (${getGrade(i.raw)})`}}}
     }
+  });
+}
 
-    async function fetchJ(url) {
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }
+function renderScoreGrid(scores){
+  const items=[
+    {name:'Draft',score:scores.draft,color:'#1a3d2b'},
+    {name:'Free Agency',score:scores.fa,color:'#40916c'},
+    {name:'Trades',score:scores.trade,color:'#a0adb0'},
+    {name:'Start / Sit',score:scores.startSit,color:'#c9a84c'},
+    {name:'Roster Opt.',score:scores.roster,color:'#c8a020'},
+  ];
+  document.getElementById('scoreGrid').innerHTML=items.map((item,i)=>
+    `<div class="score-item"${i===4?' style="grid-column:1/-1"':''}>
+      <span class="sdot" style="background:${item.color}"></span>
+      <span class="sname">${item.name}</span>
+      <span class="sval" style="color:${item.color}">${item.score}</span>
+      <span class="sgrade ${gradeCls(item.score)}">${getGrade(item.score)}</span>
+    </div>`
+  ).join('');
+}
 
-    // ── INIT ──
-    async function init() {
-      // Get user from sessionStorage (passed from index.html)
-      const stored = sessionStorage.getItem('prospect_user');
-      if (!stored) {
-        // Allow direct URL access with ?user= param
-        const params = new URLSearchParams(window.location.search);
-        const uname = params.get('user');
-        if (uname) {
-          try {
-            setLoadMsg('Looking up ' + uname + '...');
-            currentUser = await fetchJ(`${API}/user/${uname}`);
-          } catch(e) { return showError('Could not find user "' + uname + '". Please go back and try again.'); }
-        } else {
-          return showError('No user data found. Please go back and enter your username.');
-        }
-      } else {
-        currentUser = JSON.parse(stored);
-      }
+// ── COMPETENCY BREAKDOWN ──
+function renderCompGrid(scores,draftPicks,txns,weeklyData,results){
+  const addCount=scores._addCount||0;
+  const tradeCount=scores._tradeCount||0;
+  const avgEff=scores._weeklyEfficiencies||0;
 
-      if (!currentUser || !currentUser.user_id) return showError('Invalid user data. Please go back and try again.');
+  const comps=[
+    {
+      title:'Draft',score:scores.draft,color:'#1a3d2b',
+      detail:`${draftPicks.length} picks analyzed. ${draftPicks.filter(p=>p.round<=3).length} early-round investments. ${draftPicks.filter(p=>p.round>=5).length} late-round sleeper attempts. Grade reflects pick distribution and season win rate correlation.`
+    },
+    {
+      title:'Free Agency',score:scores.fa,color:'#40916c',
+      detail:`${addCount} waiver/FA adds this season. ${txns.filter(t=>t.type==='trade').length===0&&addCount>8?'High wire activity compensates for no trades.':'Activity level and win rate combined for this grade.'} Active managers who add often outperform over a full season.`
+    },
+    {
+      title:'Trades',score:scores.trade,color:'#a0adb0',
+      detail:`${tradeCount} trade${tradeCount!==1?'s':''} executed. ${tradeCount===0?(results[0]?.wins>results[0]?.losses?'No trades needed — your roster performed well without them.':'Zero trades on a losing roster is a missed lever.'):'Trade grade reflects net roster value improvement post-deal.'}`
+    },
+    {
+      title:'Start / Sit',score:scores.startSit,color:'#c9a84c',
+      detail:`${avgEff} weeks of lineup data analyzed. Compares your actual score each week to the optimal possible lineup from your full roster. A perfect score would mean you always started the right players.`
+    },
+    {
+      title:'Roster Optimization',score:scores.roster,color:'#c8a020',
+      detail:`Measures bench depth, IR slot usage, and FA activity rate. Stashing injured players on IR frees roster slots. Handcuff coverage protects your starters. Active waiver usage keeps depth competitive.`
+    },
+  ];
 
-      renderHero(currentUser);
-      setLoadMsg('Loading your leagues...');
+  document.getElementById('compGrid').innerHTML=comps.map(c=>{
+    const g=getGrade(c.score);
+    const gc=gradeCls(c.score);
+    return`<div class="comp-card" style="border-left-color:${c.color}">
+      <div class="comp-card-title">
+        ${c.title}
+        <span class="comp-grade-badge ${gc}" style="background:${c.score>=75?'#e5f4ec':c.score>=60?'#e5edf9':c.score>=44?'#fdf5e3':'#fef0f0'};color:${gradeColor(c.score)}">${g}</span>
+      </div>
+      <div class="comp-detail">${c.detail}</div>
+      <div class="comp-bar-bg"><div class="comp-bar-fill" style="width:${c.score}%;background:${c.color}"></div></div>
+    </div>`;
+  }).join('');
+}
 
-      try {
-        // Load leagues for current season
-        allLeagues = await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
-        if (!Array.isArray(allLeagues)) allLeagues = [];
-      } catch(e) { allLeagues = []; }
+// ── PLAYER TAGS ──
+function renderTags(scores,winPct,txns,draftPicks,wins,losses){
+  const tags=[];
+  const addCount=scores._addCount||0;
+  const tradeCount=scores._tradeCount||0;
 
-      populateLeagueDropdown(allLeagues);
-      setLoadMsg('Fetching player data...');
+  // Playstyle archetype
+  const wr=winPct/100;
+  if(scores.startSit>=80&&wr>0.6)tags.push({label:'Elite Operator',cat:'Playstyle',cls:'t-forest'});
+  else if(scores.fa>=75&&addCount>8)tags.push({label:'Waiver Wire Warrior',cat:'Playstyle',cls:'t-forest'});
+  else if(scores.startSit>=75)tags.push({label:'Floor Builder',cat:'Playstyle',cls:'t-forest'});
+  else if(scores.startSit<55&&wr>0.55)tags.push({label:'Schedule Surfer',cat:'Playstyle',cls:'t-warn'});
+  else if(scores.draft>=80)tags.push({label:'Draft Day GM',cat:'Playstyle',cls:'t-forest'});
+  else tags.push({label:'Developing Manager',cat:'Playstyle',cls:'t-slate'});
 
-      // Load players (lightweight — just need names/positions)
-      try {
-        allPlayers = await fetchJ(`${API}/players/nfl`);
-      } catch(e) { allPlayers = {}; }
+  // Transaction behavior
+  if(addCount>12)tags.push({label:'Trigger Happy',cat:'Transactions',cls:'t-warn'});
+  else if(addCount>7)tags.push({label:'Active Manager',cat:'Transactions',cls:'t-sage'});
+  else if(addCount>3)tags.push({label:'Selective Adds',cat:'Transactions',cls:'t-slate'});
+  else tags.push({label:'Patient Manager',cat:'Transactions',cls:'t-slate'});
 
-      showDash();
+  // Draft tendencies
+  const earlySkillPicks=draftPicks.filter(p=>p.round<=3&&['RB','WR','TE'].includes(p.metadata?.position));
+  const earlyQBPicks=draftPicks.filter(p=>p.round<=2&&p.metadata?.position==='QB');
+  if(earlyQBPicks.length>0)tags.push({label:'Early QB Drafter',cat:'Draft',cls:'t-gold'});
+  else if(earlySkillPicks.length>=2)tags.push({label:'RB/WR First',cat:'Draft',cls:'t-gold'});
+  else if(draftPicks.filter(p=>p.round>=5).length>4)tags.push({label:'Sleeper Hunter',cat:'Draft',cls:'t-gold'});
+  else tags.push({label:'Balanced Drafter',cat:'Draft',cls:'t-gold'});
 
-      // Default to first league if available, otherwise show ALL
-      if (allLeagues.length > 0) {
-        document.getElementById('leagueSelect').value = allLeagues[0].league_id;
-        currentLeagueId = allLeagues[0].league_id;
-        await loadLeagueData(currentLeagueId);
-      } else {
-        renderAllLeaguesState();
-      }
-    }
+  // Win pattern
+  if(wr>0.65)tags.push({label:'Dominant',cat:'Win Pattern',cls:'t-forest'});
+  else if(wr>0.5)tags.push({label:'Consistent Winner',cat:'Win Pattern',cls:'t-sage'});
+  else if(wr>0.4)tags.push({label:'Streaky',cat:'Win Pattern',cls:'t-warn'});
+  else tags.push({label:'Work In Progress',cat:'Win Pattern',cls:'t-red'});
 
-    // ── RENDER HERO ──
-    function renderHero(user) {
-      document.title = `${user.display_name || user.username} — Prospect`;
-      document.getElementById('heroName').textContent = user.display_name || user.username;
-      document.getElementById('heroHandle').textContent = '@' + (user.username || '');
+  // Trade tag
+  if(tradeCount>3)tags.push({label:'Trade Machine',cat:'Trades',cls:'t-gold'});
+  else if(tradeCount===0&&wr<0.4)tags.push({label:'Missed Leverage',cat:'Trades',cls:'t-warn'});
 
-      const avatarEl = document.getElementById('avatarEl');
-      if (user.avatar) {
-        const img = document.createElement('img');
-        img.className = 'avatar-img';
-        img.src = CDN + user.avatar;
-        img.alt = user.display_name || user.username;
-        img.onerror = () => { avatarEl.innerHTML = initialsAvatar(user); };
-        avatarEl.appendChild(img);
-      } else {
-        avatarEl.innerHTML = initialsAvatar(user);
-      }
-    }
+  document.getElementById('tagsWrap').innerHTML=tags.map(t=>
+    `<span class="tag ${t.cls}"><span class="tag-cat">${t.cat}</span> ${t.label}</span>`
+  ).join('');
+}
 
-    function initialsAvatar(user) {
-      const name = user.display_name || user.username || '?';
-      const initials = name.slice(0,2).toUpperCase();
-      return `<div class="avatar-initials">${initials}</div>`;
-    }
+// ── HIGHLIGHTS ──
+function renderHighlights(draftPicks,txns,weeklyData){
+  const picks=draftPicks;
+  const highlights=[];
 
-    function updateHeroStats(wins, losses, pf, rank, total) {
-      const statsEl = document.getElementById('heroStats');
-      const pfNum = parseFloat(pf || 0).toFixed(1);
-      const items = [
-        { val: `${wins}–${losses}`, lbl: 'Record' },
-        { val: `${rank}/${total}`, lbl: 'Standing' },
-        { val: pfNum, lbl: 'Points For' },
-      ];
-      statsEl.innerHTML = items.map((s, i) =>
-        `${i > 0 ? '<div class="hstat-div"></div>' : ''}
-        <div class="hstat">
-          <span class="hstat-val">${s.val}</span>
-          <span class="hstat-lbl">${s.lbl}</span>
-        </div>`
-      ).join('');
-    }
+  // Most drafted player (picked in the most leagues)
+  const pickCount={};
+  picks.forEach(p=>{const id=p.player_id;if(id)pickCount[id]=(pickCount[id]||0)+1});
+  const topPick=Object.entries(pickCount).sort((a,b)=>b[1]-a[1])[0];
+  if(topPick){
+    const p=allPlayers[topPick[0]]||{};
+    highlights.push({icon:'🏆',iconBg:'#e8f6ee',type:'Most Drafted',player:p.full_name||`Player #${topPick[0]}`,detail:`Drafted ${topPick[1]}x across leagues · ${p.position||'—'} · ${p.team||'FA'}`});
+  }
 
-    // ── LEAGUE DROPDOWN ──
-    function populateLeagueDropdown(leagues) {
-      const sel = document.getElementById('leagueSelect');
-      // Clear existing options except "All Leagues"
-      while (sel.options.length > 1) sel.remove(1);
+  // Best sleeper — late round (5+) skill position
+  const sleepers=picks.filter(p=>p.round>=5&&['QB','RB','WR','TE'].includes(p.metadata?.position));
+  if(sleepers.length>0){
+    const best=sleepers[Math.floor(Math.random()*Math.min(3,sleepers.length))];
+    const p=allPlayers[best.player_id]||{};
+    highlights.push({icon:'💎',iconBg:'#fdf5e3',type:'Sleeper Pick',player:p.full_name||`Player #${best.player_id}`,detail:`Round ${best.round}, Pick ${best.pick_no||'—'} · ${p.position||'—'} · ${p.team||'FA'}`});
+  }
 
-      leagues.forEach(lg => {
-        const opt = document.createElement('option');
-        opt.value = lg.league_id;
-        opt.textContent = lg.name || 'Unnamed League';
-        sel.appendChild(opt);
-      });
+  // Biggest bust — round 1-2 pick
+  const earlyPicks=picks.filter(p=>p.round<=2);
+  if(earlyPicks.length>0){
+    const bust=earlyPicks[earlyPicks.length-1];
+    const p=allPlayers[bust.player_id]||{};
+    highlights.push({icon:'📉',iconBg:'#fef0f0',type:'Early Round Risk',player:p.full_name||`Player #${bust.player_id}`,detail:`Round ${bust.round}, Pick ${bust.pick_no||'—'} · ${p.position||'—'} · ${p.team||'FA'}`});
+  }
 
-      const badge = document.getElementById('leagueCountBadge');
-      badge.textContent = leagues.length === 0
-        ? 'No leagues found'
-        : `${leagues.length} league${leagues.length !== 1 ? 's' : ''} · ${currentSeason}`;
-    }
+  // Most added player
+  const addedPlayers={};
+  txns.filter(t=>t.adds).forEach(t=>{Object.keys(t.adds||{}).forEach(id=>{addedPlayers[id]=(addedPlayers[id]||0)+1})});
+  const topAdd=Object.entries(addedPlayers).sort((a,b)=>b[1]-a[1])[0];
+  if(topAdd){
+    const p=allPlayers[topAdd[0]]||{};
+    highlights.push({icon:'🔄',iconBg:'#e5edf9',type:'Most Added',player:p.full_name||`Player #${topAdd[0]}`,detail:`Added ${topAdd[1]} time${topAdd[1]!==1?'s':''} · ${p.position||'—'} · ${p.team||'FA'}`});
+  }
 
-    // ── ON LEAGUE CHANGE ──
-    async function onLeagueChange() {
-      const sel = document.getElementById('leagueSelect');
-      currentLeagueId = sel.value;
+  // Highest scoring week
+  if(weeklyData.length>0){
+    const best=weeklyData.reduce((a,b)=>b.points>a.points?b:a);
+    highlights.push({icon:'⚡',iconBg:'#edf4ef',type:'Best Week',player:`Week ${best.week} — ${best.points.toFixed(1)} pts`,detail:'Your highest single-week scoring output this season'});
+  }
 
-      if (currentLeagueId === 'ALL') {
-        document.getElementById('recordStrip').style.display = 'none';
-        document.getElementById('heroStats').innerHTML = '';
-        renderAllLeaguesState();
-        return;
-      }
-      await loadLeagueData(currentLeagueId);
-    }
+  if(highlights.length===0){
+    document.getElementById('highlightsRow').innerHTML='<div style="font-size:13px;color:var(--muted);padding:.5rem">Not enough data for highlights yet.</div>';
+    return;
+  }
 
-    // ── ON SEASON CHANGE ── (UI only for now)
-    async function onSeasonChange() {
-      const sel = document.getElementById('seasonSelect');
-      currentSeason = sel.value;
+  document.getElementById('highlightsRow').innerHTML=highlights.map(h=>
+    `<div class="hl-card">
+      <div class="hl-icon" style="background:${h.iconBg}">${h.icon}</div>
+      <div class="hl-type">${h.type}</div>
+      <div class="hl-player">${h.player}</div>
+      <div class="hl-detail">${h.detail}</div>
+    </div>`
+  ).join('');
+}
 
-      // Reload leagues for new season (unless ALL)
-      if (currentSeason === 'ALL') {
-        document.getElementById('leagueCountBadge').textContent = 'All seasons';
-        return; // placeholder — aggregation coming later
-      }
+// ── LUCK ──
+function renderLuckSingle(r){
+  const allPF=r.allRosters.map(x=>parseFloat(x.settings?.fpts||0)).sort((a,b)=>a-b);
+  const myPFPctile=allPF.length>1?allPF.findIndex(p=>p>=r.pf)/(allPF.length-1):0.5;
+  const winPct=r.wins/(r.wins+r.losses||1);
+  const luckDelta=winPct-myPFPctile;
+  const label=luckDelta>0.15?'Running Hot':luckDelta>0.05?'Slight Tailwind':luckDelta>-0.05?'Balanced':luckDelta>-0.15?'Slight Headwind':'Schedule Victim';
+  const cls=luckDelta>0.05?'lbg-pos':luckDelta>-0.05?'lbg-neu':'lbg-neg';
+  const explain=luckDelta<-0.1?'Your scoring output ranks better than your win rate suggests. The schedule has worked against you.':luckDelta>0.1?'Your record is slightly better than your scoring rank would predict.':'Your record accurately reflects your scoring performance.';
 
-      setRosterLoading();
-      try {
-        allLeagues = await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
-        if (!Array.isArray(allLeagues)) allLeagues = [];
-      } catch(e) { allLeagues = []; }
+  document.getElementById('luckBand').innerHTML=`
+    <div class="luck-head"><span class="luck-title-text">Schedule Luck Analysis</span><span class="luck-badge ${cls}">${label}</span></div>
+    <div class="luck-explain">${explain} Scoring rank: <strong>${Math.round(myPFPctile*100)}th percentile</strong>. Win rate: <strong>${Math.round(winPct*100)}%</strong>.</div>
+    <div class="luck-bar-row"><span class="lb-label">Win rate</span><div class="lb-bg"><div class="lb-fill" style="width:${Math.round(winPct*100)}%;background:var(--green2)"></div></div><span class="lb-val">${Math.round(winPct*100)}%</span></div>
+    <div class="luck-bar-row"><span class="lb-label">Scoring rank</span><div class="lb-bg"><div class="lb-fill" style="width:${Math.round(myPFPctile*100)}%;background:var(--gold)"></div></div><span class="lb-val">${Math.round(myPFPctile*100)}%ile</span></div>`;
+}
 
-      populateLeagueDropdown(allLeagues);
+function renderLuckMulti(results,totalW,totalL){
+  const validResults=results.filter(Boolean);
+  if(validResults.length===0)return;
+  const avgLuck=validResults.reduce((s,r)=>{
+    const allPF=r.allRosters.map(x=>parseFloat(x.settings?.fpts||0)).sort((a,b)=>a-b);
+    const pctile=allPF.length>1?allPF.findIndex(p=>p>=r.pf)/(allPF.length-1):0.5;
+    const wr=r.wins/(r.wins+r.losses||1);
+    return s+(wr-pctile);
+  },0)/validResults.length;
+  const label=avgLuck>0.1?'Running Hot':avgLuck>0.03?'Slight Tailwind':avgLuck>-0.03?'Balanced':avgLuck>-0.1?'Slight Headwind':'Schedule Victim';
+  const cls=avgLuck>0.03?'lbg-pos':avgLuck>-0.03?'lbg-neu':'lbg-neg';
+  const winPct=(totalW/(totalW+totalL||1))*100;
+  document.getElementById('luckBand').innerHTML=`
+    <div class="luck-head"><span class="luck-title-text">Aggregate Schedule Luck</span><span class="luck-badge ${cls}">${label}</span></div>
+    <div class="luck-explain">Averaged across all ${validResults.length} leagues. ${avgLuck<-0.05?'Your scoring output collectively outperforms your win rate — bad schedule luck.':avgLuck>0.05?'Your record is slightly boosted by favorable scheduling.':'Your records reflect your actual performance across leagues.'}</div>
+    <div class="luck-bar-row"><span class="lb-label">Avg win rate</span><div class="lb-bg"><div class="lb-fill" style="width:${Math.round(winPct)}%;background:var(--green2)"></div></div><span class="lb-val">${Math.round(winPct)}%</span></div>`;
+}
 
-      // Reset to first league
-      if (allLeagues.length > 0) {
-        document.getElementById('leagueSelect').value = allLeagues[0].league_id;
-        currentLeagueId = allLeagues[0].league_id;
-        await loadLeagueData(currentLeagueId);
-      } else {
-        document.getElementById('recordStrip').style.display = 'none';
-        document.getElementById('heroStats').innerHTML = '';
-        renderAllLeaguesState();
-      }
-    }
+// ── VERDICT ──
+function renderVerdict(scores,iqScore,wins,losses,winPct,playoffPct,firstPlace,leagueCount){
+  const standing=wins>losses?'win':wins<losses?'lose':'neutral';
+  const headline=standing==='win'?'You are winning — keep pressing the edge':standing==='lose'?'You are losing — here\'s exactly why':'You\'re in the mix — a few changes could shift momentum';
+  const weakest=Object.entries({Draft:scores.draft,'Free Agency':scores.fa,Trades:scores.trade,'Start/Sit':scores.startSit,'Roster Opt.':scores.roster}).sort((a,b)=>a[1]-b[1])[0];
+  const strongest=Object.entries({Draft:scores.draft,'Free Agency':scores.fa,Trades:scores.trade,'Start/Sit':scores.startSit,'Roster Opt.':scores.roster}).sort((a,b)=>b[1]-a[1])[0];
 
-    // ── LOAD LEAGUE DATA ──
-    async function loadLeagueData(leagueId) {
-      setRosterLoading();
-      document.getElementById('recordStrip').style.display = 'none';
+  const body=`Your Prospect IQ of ${iqScore} puts you in the ${iqScore>=80?'elite':'iqScore>=65?'solid':'developing'} tier. Your strongest area is ${strongest[0]} (${getGrade(strongest[1])}) and your biggest opportunity is ${weakest[0]} (${getGrade(weakest[1])}).`;
 
-      try {
-        const [rosters, leagueUsers, leagueInfo] = await Promise.all([
-          fetchJ(`${API}/league/${leagueId}/rosters`),
-          fetchJ(`${API}/league/${leagueId}/users`),
-          fetchJ(`${API}/league/${leagueId}`)
-        ]);
+  const recs=[];
+  if(scores.trade<55&&wins<losses)recs.push('You haven\'t leveraged trades — this is often the fastest way to upgrade a struggling roster.');
+  if(scores.startSit<60)recs.push('Start/sit efficiency is your lowest score. Even small lineup improvements weekly compound over a season.');
+  if(scores.fa<55)recs.push('Check the waiver wire more frequently — most seasons are won or lost on FA pickups in weeks 4–10.');
+  if(scores.roster<55)recs.push('Use your IR slot. Move injured players and open an active roster spot every time.');
+  if(scores.draft<55)recs.push('Focus next draft on early-round skill positions (RB/WR rounds 1–3) before stacking your bench.');
 
-        // Find the user's roster
-        const myRoster = rosters.find(r => r.owner_id === currentUser.user_id);
-        if (!myRoster) {
-          renderRosterError('Could not find your roster in this league.');
-          return;
-        }
+  document.getElementById('verdictHeadline').textContent=headline;
+  document.getElementById('verdictBody').textContent=body.replace('iqScore>=65?','');
+  document.getElementById('verdictRecs').innerHTML=recs.map(r=>`<li>${r}</li>`).join('');
+}
 
-        // Standings
-        const sorted = [...rosters].sort((a, b) => {
-          const aw = a.settings?.wins || 0, bw = b.settings?.wins || 0;
-          if (bw !== aw) return bw - aw;
-          return parseFloat(b.settings?.fpts || 0) - parseFloat(a.settings?.fpts || 0);
-        });
-        const myRank = sorted.findIndex(r => r.roster_id === myRoster.roster_id) + 1;
-        const wins = myRoster.settings?.wins || 0;
-        const losses = myRoster.settings?.losses || 0;
-        const pf = parseFloat(myRoster.settings?.fpts || 0) + parseFloat((myRoster.settings?.fpts_decimal || 0) / 100);
+// ── STANDINGS ──
+function renderStandings(rosters,users,league){
+  const sorted=[...rosters].sort((a,b)=>{
+    const aw=a.settings?.wins||0,bw=b.settings?.wins||0;
+    if(bw!==aw)return bw-aw;
+    return parseFloat(b.settings?.fpts||0)-parseFloat(a.settings?.fpts||0);
+  });
+  document.getElementById('standingsRows').innerHTML=sorted.slice(0,10).map((r,i)=>{
+    const u=users.find(x=>x.user_id===r.owner_id);
+    const name=r.owner_id===currentUser.user_id?(currentUser.display_name||currentUser.username):(u?.display_name||u?.username||'Team '+(i+1));
+    const isMe=r.owner_id===currentUser.user_id;
+    const w=r.settings?.wins||0,l=r.settings?.losses||0;
+    const pts=parseFloat(r.settings?.fpts||0).toFixed(1);
+    return`<div class="s-row${isMe?' me':''}">
+      <span class="s-rank">${i+1}</span>
+      <span class="s-name">${name}${isMe?'<span class="s-you">YOU</span>':''}</span>
+      <span class="s-record">${w}–${l}</span>
+      <span class="s-pts">${pts}</span>
+    </div>`;
+  }).join('');
+}
 
-        updateHeroStats(wins, losses, pf, myRank, rosters.length);
-        renderRecordStrip(wins, losses, myRoster.settings?.ties || 0, pf, myRank, rosters.length, leagueInfo);
+// ── ROSTER ──
+function renderRoster(roster,rosterPositions,players){
+  const starters=roster.starters||[];
+  const allPlayerIds=roster.players||[];
+  const irSlot=roster.reserve||[];
+  const benchIds=allPlayerIds.filter(id=>!starters.includes(id)&&!irSlot.includes(id));
+  const starterSlotDefs=rosterPositions.filter(p=>p!=='BN'&&p!=='IR');
 
-        // Find team name
-        const leagueUser = leagueUsers.find(u => u.user_id === currentUser.user_id);
-        const teamName = leagueUser?.metadata?.team_name || leagueInfo?.name || 'Your Team';
+  let html=`<table class="roster-table">
+    <thead><tr>
+      <th style="width:44px">Slot</th><th>Player</th>
+      <th style="width:70px">Pos</th><th style="width:75px">NFL Team</th><th style="width:65px">Status</th>
+    </tr></thead><tbody>`;
 
-        // Update section title
-        document.getElementById('rosterSectionTitle').textContent = 'Active Roster';
-        document.getElementById('rosterMeta').textContent =
-          `${(myRoster.players || []).length} players · ${leagueInfo?.name || ''}`;
+  starters.forEach((id,i)=>{html+=buildPlayerRow(id,starterSlotDefs[i]||'FLEX',players)});
+  if(benchIds.length>0){
+    html+=`<tr class="bench-divider"><td colspan="5">Bench · ${benchIds.length} players</td></tr>`;
+    benchIds.forEach(id=>{html+=buildPlayerRow(id,'BN',players)});
+  }
+  if(irSlot.length>0){
+    html+=`<tr class="bench-divider"><td colspan="5">Injured Reserve · ${irSlot.length} players</td></tr>`;
+    irSlot.forEach(id=>{html+=buildPlayerRow(id,'IR',players)});
+  }
+  html+=`</tbody></table>`;
 
-        // Get roster positions config
-        const rosterPositions = leagueInfo?.roster_positions || [];
-        renderRoster(myRoster, rosterPositions, allPlayers);
+  if(starters.length===0&&benchIds.length===0){
+    document.getElementById('rosterContent').innerHTML='<div class="roster-empty">No players found on this roster.</div>';
+    return;
+  }
+  document.getElementById('rosterContent').innerHTML=html;
+}
 
-      } catch(e) {
-        renderRosterError('Failed to load league data. Please try again.');
-        console.error(e);
-      }
-    }
+function buildPlayerRow(playerId,slot,players){
+  const p=players[playerId]||{};
+  const name=p.full_name||(p.first_name?`${p.first_name} ${p.last_name}`.trim():`Player #${playerId}`);
+  const pos=p.position||'—';
+  const team=p.team||'FA';
+  const injStatus=p.injury_status||'';
+  const statusLabel=STATUS_MAP[injStatus]||'';
+  const slotLabel=POS_MAP[slot]||slot;
+  const slotClass='pos-'+(slot==='IDP_FLEX'?'IDP':slot);
+  const posClass='pos-'+(pos==='IDP_FLEX'?'IDP':pos);
+  const isDefense=pos==='DEF'||slot==='DEF'||slot==='DST';
+  const thumbUrl=!isDefense&&playerId&&!/^[A-Z]{2,4}$/.test(playerId)?PCDN+playerId+'.jpg':null;
+  const thumbHtml=thumbUrl
+    ?`<img class="player-thumb" src="${thumbUrl}" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="player-thumb-initials" style="display:none">${getInitials(name)}</div>`
+    :`<div class="player-thumb-initials">${isDefense?team:getInitials(name)}</div>`;
+  const statusHtml=statusLabel?`<span class="player-status status-${statusLabel}">${statusLabel}</span>`:'';
 
-    // ── RENDER RECORD STRIP ──
-    function renderRecordStrip(w, l, t, pf, rank, total, league) {
-      const cards = [
-        { val: `${w}–${l}${t ? '–' + t : ''}`, lbl: 'Record' },
-        { val: `${rank} / ${total}`, lbl: 'Standing' },
-        { val: parseFloat(pf).toFixed(1), lbl: 'Points For' },
-        { val: `${Math.round((w / (w + l || 1)) * 100)}%`, lbl: 'Win Rate' },
-      ];
-      document.getElementById('recordCards').innerHTML = cards.map(c =>
-        `<div class="rec-card">
-          <div class="rec-val">${c.val}</div>
-          <div class="rec-lbl">${c.lbl}</div>
-        </div>`
-      ).join('');
-      document.getElementById('recordStrip').style.display = 'block';
-    }
+  return`<tr>
+    <td><span class="pos-badge ${slotClass}">${slotLabel}</span></td>
+    <td><div class="player-cell">${thumbHtml}<div><div class="player-name">${name}${statusHtml}</div><div class="player-team">${team}</div></div></div></td>
+    <td><span class="pos-badge ${posClass}">${pos}</span></td>
+    <td style="font-size:12px;font-weight:500;color:var(--muted)">${team}</td>
+    <td style="font-size:12px;color:${statusLabel?'#c0392b':'var(--muted2)'}"> ${statusLabel||'—'}</td>
+  </tr>`;
+}
 
-    // ── RENDER ROSTER ──
-    function renderRoster(roster, rosterPositions, players) {
-      const starters = roster.starters || [];
-      const allPlayerIds = roster.players || [];
-      const irSlot = roster.reserve || [];
+function getInitials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
 
-      // Separate starters and bench
-      const benchIds = allPlayerIds.filter(id => !starters.includes(id) && !irSlot.includes(id));
+function setRosterLoading(){
+  document.getElementById('rosterContent').innerHTML=`<div class="roster-loading"><div class="mini-spinner"></div><div style="font-size:13px;color:var(--muted)">Loading...</div></div>`;
+}
 
-      let rows = '';
+function renderEmptyState(){
+  document.getElementById('statGrid').innerHTML='<div style="font-size:13px;color:var(--muted);grid-column:1/-1">No leagues found for this season.</div>';
+  document.getElementById('rosterContent').innerHTML='<div class="roster-empty">No leagues found for the selected season.</div>';
+}
 
-      // Header
-      rows += `<tr>
-        <th style="width:44px">Slot</th>
-        <th>Player</th>
-        <th>Position</th>
-        <th>Team</th>
-        <th>Status</th>
-      </tr>`;
-
-      // Build starter slots from rosterPositions
-      const starterSlotDefs = rosterPositions.filter(p => p !== 'BN' && p !== 'IR');
-
-      // Map starter IDs to their slot position
-      starters.forEach((playerId, idx) => {
-        const slotPos = starterSlotDefs[idx] || 'FLEX';
-        rows += buildPlayerRow(playerId, slotPos, players, false);
-      });
-
-      // Bench divider
-      if (benchIds.length > 0) {
-        rows += `<tr class="bench-divider"><td colspan="5">Bench</td></tr>`;
-        benchIds.forEach(id => {
-          rows += buildPlayerRow(id, 'BN', players, false);
-        });
-      }
-
-      // IR divider
-      if (irSlot.length > 0) {
-        rows += `<tr class="bench-divider"><td colspan="5">Injured Reserve</td></tr>`;
-        irSlot.forEach(id => {
-          rows += buildPlayerRow(id, 'IR', players, false);
-        });
-      }
-
-      if (starters.length === 0 && benchIds.length === 0) {
-        document.getElementById('rosterContent').innerHTML =
-          `<div class="roster-empty">No players found on this roster.</div>`;
-        return;
-      }
-
-      document.getElementById('rosterContent').innerHTML =
-        `<table class="roster-table"><thead>${rows.slice(0, rows.indexOf('</tr>') + 5)}</thead><tbody>${rows.slice(rows.indexOf('</tr>') + 5)}</tbody></table>`;
-
-      // Simpler approach — just build the whole table at once
-      document.getElementById('rosterContent').innerHTML =
-        `<table class="roster-table">
-          <thead>
-            <tr>
-              <th style="width:44px">Slot</th>
-              <th>Player</th>
-              <th style="width:80px">Pos</th>
-              <th style="width:80px">NFL Team</th>
-              <th style="width:70px">Status</th>
-            </tr>
-          </thead>
-          <tbody>${buildRosterRows(starters, starterSlotDefs, benchIds, irSlot, players)}</tbody>
-        </table>`;
-    }
-
-    function buildRosterRows(starters, slotDefs, bench, ir, players) {
-      let html = '';
-      starters.forEach((id, i) => {
-        html += buildPlayerRow(id, slotDefs[i] || 'FLEX', players);
-      });
-      if (bench.length > 0) {
-        html += `<tr class="bench-divider"><td colspan="5">Bench · ${bench.length} players</td></tr>`;
-        bench.forEach(id => { html += buildPlayerRow(id, 'BN', players); });
-      }
-      if (ir.length > 0) {
-        html += `<tr class="bench-divider"><td colspan="5">Injured Reserve · ${ir.length} players</td></tr>`;
-        ir.forEach(id => { html += buildPlayerRow(id, 'IR', players); });
-      }
-      return html;
-    }
-
-    function buildPlayerRow(playerId, slot, players) {
-      const p = players[playerId] || {};
-      const name = p.full_name || p.first_name ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : `Player #${playerId}`;
-      const pos = p.position || '—';
-      const team = p.team || 'FA';
-      const injStatus = p.injury_status || '';
-      const statusLabel = STATUS_LABELS[injStatus] || '';
-      const slotLabel = POS_LABEL[slot] || slot;
-      const posClass = `pos-${pos.replace('/','').replace(' ','')}`;
-      const slotClass = `pos-${slot}`;
-      const isDefense = pos === 'DEF' || slot === 'DEF' || slot === 'DST';
-
-      // Player thumbnail — NFL players use Sleeper CDN
-      const thumbUrl = !isDefense && playerId && !/^[A-Z]{2,4}$/.test(playerId)
-        ? PLAYER_CDN + playerId + '.jpg'
-        : null;
-
-      const thumbHtml = thumbUrl
-        ? `<img class="player-thumb" src="${thumbUrl}" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"  />
-           <div class="player-thumb-initials" style="display:none">${getInitials(name)}</div>`
-        : `<div class="player-thumb-initials">${isDefense ? team : getInitials(name)}</div>`;
-
-      const statusHtml = statusLabel
-        ? `<span class="player-status status-${statusLabel}">${statusLabel}</span>`
-        : '';
-
-      return `<tr>
-        <td><span class="pos-badge ${slotClass}">${slotLabel}</span></td>
-        <td>
-          <div class="player-cell">
-            ${thumbHtml}
-            <div>
-              <div class="player-name">${name}${statusHtml}</div>
-              <div class="player-team">${team}</div>
-            </div>
-          </div>
-        </td>
-        <td><span class="pos-badge ${posClass}">${pos}</span></td>
-        <td style="font-size:12px;font-weight:500;color:var(--muted)">${team}</td>
-        <td style="font-size:12px;color:${statusLabel ? '#c0392b' : 'var(--muted2)'}">
-          ${statusLabel || '—'}
-        </td>
-      </tr>`;
-    }
-
-    function getInitials(name) {
-      return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-    }
-
-    function setRosterLoading() {
-      document.getElementById('rosterContent').innerHTML = `
-        <div class="roster-loading">
-          <div class="mini-spinner"></div>
-          <div style="font-size:13px;color:var(--muted)">Loading roster...</div>
-        </div>`;
-    }
-
-    function renderRosterError(msg) {
-      document.getElementById('rosterContent').innerHTML =
-        `<div class="roster-empty">${msg}</div>`;
-    }
-
-    function renderAllLeaguesState() {
-      document.getElementById('rosterSectionTitle').textContent = 'Roster';
-      document.getElementById('rosterMeta').textContent = '';
-      document.getElementById('rosterContent').innerHTML = `
-        <div class="all-leagues-msg">
-          <div class="all-leagues-icon">🏆</div>
-          <div class="all-leagues-title">Select a league to view your roster</div>
-          <div class="all-leagues-sub">Choose a league from the dropdown above, or select All Leagues to see an aggregated view (coming soon).</div>
-        </div>`;
-    }
-
-    // ── BOOT ──
-    init();
-  </script>
+// ── BOOT ──
+init();
+</script>
 </body>
 </html>
