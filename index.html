@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
     :root {
       --forest:  #1a3d2b;
       --forest2: #224d37;
@@ -34,7 +34,7 @@
       --surf:    #f2f7f3;
       --surf2:   #e8f0ea;
     }
-
+ 
     html, body {
       height: 100%;
       background: var(--cream);
@@ -44,7 +44,7 @@
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
-
+ 
     /* ── NAV ── */
     .nav {
       position: fixed;
@@ -103,7 +103,7 @@
       color: var(--gold2);
       border-color: rgba(201,168,76,0.25);
     }
-
+ 
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
@@ -141,7 +141,8 @@
       max-width: 580px;
       width: 100%;
     }
-
+ 
+    /* eyebrow */
     .eyebrow {
       display: flex;
       align-items: center;
@@ -161,7 +162,8 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
     }
-
+ 
+    /* headline */
     .headline {
       font-size: clamp(2.6rem, 7vw, 4.2rem);
       font-weight: 800;
@@ -182,7 +184,8 @@
       line-height: 1.7;
       margin-bottom: 2.5rem;
     }
-
+ 
+    /* ── SEARCH CARD ── */
     .search-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -207,7 +210,8 @@
       height: 1px;
       background: var(--border);
     }
-
+ 
+    /* field group */
     .field-group {
       display: flex;
       flex-direction: column;
@@ -266,7 +270,8 @@
       color: var(--muted2);
       line-height: 1.5;
     }
-
+ 
+    /* season row */
     .season-row {
       display: flex;
       align-items: center;
@@ -305,7 +310,8 @@
       border-color: var(--green2);
       color: var(--green2);
     }
-
+ 
+    /* CTA button */
     .cta-btn {
       width: 100%;
       background: var(--forest);
@@ -332,7 +338,8 @@
       transition: transform .15s;
     }
     .cta-btn:hover .cta-arrow { transform: translateX(3px); }
-
+ 
+    /* error / success */
     .err-msg {
       font-size: 12px;
       font-weight: 500;
@@ -341,7 +348,8 @@
       min-height: 18px;
       text-align: center;
     }
-
+ 
+    /* ── LOADING OVERLAY ── */
     .loading-overlay {
       display: none;
       position: fixed;
@@ -389,7 +397,8 @@
       font-weight: 500;
       color: var(--muted);
     }
-
+ 
+    /* ── FEATURE CHIPS ── */
     .feature-row {
       display: flex;
       flex-wrap: wrap;
@@ -415,7 +424,8 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-
+ 
+    /* ── FOOTER ── */
     .footer {
       text-align: center;
       padding: 2rem;
@@ -427,7 +437,8 @@
       color: var(--muted);
       font-weight: 500;
     }
-
+ 
+    /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
       .nav { padding: 0 1.25rem; }
       .search-card { padding: 1.5rem; border-radius: 14px; }
@@ -437,7 +448,8 @@
   </style>
 </head>
 <body>
-
+ 
+  <!-- NAV -->
   <nav class="nav">
     <a href="/" class="nav-brand">
       <img src="images/logo.png" class="nav-logo" alt="Prospect Logo" />
@@ -448,7 +460,8 @@
       <a href="#" class="nav-pill">About</a>
     </div>
   </nav>
-
+ 
+  <!-- LOADING OVERLAY -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="load-logo-row">
       <img src="images/logo.png" class="load-logo" alt="Prospect Logo" />
@@ -457,25 +470,28 @@
     <div class="load-bar-track"><div class="load-bar-fill"></div></div>
     <div class="load-msg" id="loadMsg">Connecting to Sleeper...</div>
   </div>
-
+ 
+  <!-- HERO -->
   <main class="hero">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
     <div class="hero-inner">
-
+ 
       <div class="eyebrow">
         <span class="eyebrow-line"></span>
         <span class="eyebrow-text">Fantasy Football Intelligence</span>
         <span class="eyebrow-line"></span>
       </div>
-
+ 
       <h1 class="headline">Mine the data.<br>Prospect for <em>gold.</em></h1>
       <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
-
+ 
+      <!-- SEARCH CARD -->
       <div class="search-card">
         <div class="search-card-label">Get your report</div>
-
+ 
         <div class="field-group">
+          <!-- Username -->
           <div class="field">
             <label>Sleeper Username</label>
             <div class="field-wrap">
@@ -494,7 +510,8 @@
               />
             </div>
           </div>
-
+ 
+          <!-- League ID -->
           <div class="field">
             <label>League ID</label>
             <div class="field-wrap">
@@ -513,22 +530,25 @@
             <span class="field-hint">Find your League ID in Sleeper → League Settings → scroll to the bottom</span>
           </div>
         </div>
-
+ 
+        <!-- Season selector — data-season values match the actual API year -->
         <div class="season-row">
           <span class="season-label">Season</span>
           <div class="season-pills">
-            <button class="season-pill" data-season="2022" onclick="setSeason(this)">2023</button>
-            <button class="season-pill" data-season="2023" onclick="setSeason(this)">2024</button>
-            <button class="season-pill active" data-season="2024" onclick="setSeason(this)">2025</button>
+            <button class="season-pill" data-season="2023" onclick="setSeason(this)">2023</button>
+            <button class="season-pill" data-season="2024" onclick="setSeason(this)">2024</button>
+            <button class="season-pill active" data-season="2025" onclick="setSeason(this)">2025</button>
           </div>
         </div>
-
+ 
+        <!-- CTA -->
         <button class="cta-btn" id="runBtn" onclick="runReport()">
           View my GM Dashboard <span class="cta-arrow">→</span>
         </button>
         <div class="err-msg" id="errMsg"></div>
       </div>
-
+ 
+      <!-- FEATURE CHIPS -->
       <div class="feature-row">
         <div class="f-chip"><span class="f-dot" style="background:#1a3d2b"></span>Draft Grade</div>
         <div class="f-chip"><span class="f-dot" style="background:#40916c"></span>Free Agency</div>
@@ -536,87 +556,93 @@
         <div class="f-chip"><span class="f-dot" style="background:#c9a84c"></span>Start / Sit</div>
         <div class="f-chip"><span class="f-dot" style="background:#f4d06f"></span>Roster Optimization</div>
       </div>
-
+ 
     </div>
   </main>
-
+ 
   <footer class="footer">
     <span>Prospect</span> · Powered by Sleeper API · prospectff.com
   </footer>
-
+ 
   <script>
     const API = 'https://api.sleeper.app/v1';
     let selectedSeason = '2025';
-
+ 
     function setSeason(el) {
       document.querySelectorAll('.season-pill').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
       selectedSeason = el.dataset.season;
     }
-
+ 
     function setErr(msg) {
       document.getElementById('errMsg').textContent = msg;
+      document.getElementById('errMsg').style.color = '#b84040';
       document.getElementById('runBtn').disabled = false;
       document.getElementById('loadingOverlay').classList.remove('visible');
     }
-
+ 
     function setLoadMsg(msg) {
       document.getElementById('loadMsg').textContent = msg;
     }
-
+ 
     async function fetchJ(url) {
       const r = await fetch(url);
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }
-
+ 
     async function runReport() {
       const username = document.getElementById('usernameInput').value.trim();
       const leagueId = document.getElementById('leagueIdInput').value.trim();
       document.getElementById('errMsg').textContent = '';
-
+ 
       if (!username) return setErr('Please enter your Sleeper username.');
       if (!leagueId) return setErr('Please enter your League ID.');
       if (!/^\d+$/.test(leagueId)) return setErr('League ID should be a number — check Sleeper League Settings.');
-
+ 
       document.getElementById('runBtn').disabled = true;
       document.getElementById('loadingOverlay').classList.add('visible');
-
+ 
       try {
         setLoadMsg('Looking up your profile...');
         const user = await fetchJ(`${API}/user/${username}`);
         if (!user || !user.user_id) throw new Error('Username not found. Check your Sleeper username and try again.');
-
+ 
         setLoadMsg('Verifying league...');
         const league = await fetchJ(`${API}/league/${leagueId}`);
         if (!league || !league.league_id) throw new Error('League not found. Double-check your League ID.');
-
-        setLoadMsg('Building your report...');
-
+ 
+        setLoadMsg('Building your GM Dashboard...');
+ 
+        // Store for Module 2 — report page
         sessionStorage.setItem('prospect_user', JSON.stringify(user));
         sessionStorage.setItem('prospect_league', JSON.stringify(league));
         sessionStorage.setItem('prospect_season', selectedSeason);
-
-        setLoadMsg('Profile verified! Report module coming soon.');
+ 
+        // Uncomment when report.html is ready:
+        // window.location.href = '/report.html';
+ 
+        // Temporary success state until Module 2 is live
         setTimeout(() => {
           document.getElementById('loadingOverlay').classList.remove('visible');
           document.getElementById('runBtn').disabled = false;
           document.getElementById('errMsg').style.color = '#40916c';
           document.getElementById('errMsg').textContent =
-            `✓ Connected: ${user.display_name || username} · ${league.name} · Ready to build report module.`;
+            `✓ Connected: ${user.display_name || username} · ${league.name} · GM Dashboard coming soon.`;
         }, 1500);
-
+ 
       } catch (e) {
         setErr(e.message || 'Something went wrong. Please try again.');
       }
     }
-
+ 
+    // Enter key support on both fields
     ['usernameInput', 'leagueIdInput'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') runReport();
       });
     });
   </script>
-
+ 
 </body>
 </html>
