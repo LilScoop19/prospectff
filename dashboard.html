@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prospect — GM Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --forest:#1a3d2b; --forest2:#224d37; --forest3:#163324;
+      --green:#2d6a4f; --green2:#40916c; --green3:#74c69d;
+      --gold:#c9a84c; --gold2:#e0b84f; --gold3:#f4d06f;
+      --cream:#f8faf7; --white:#ffffff;
+      --ink:#0d1b12; --ink2:#2a3b2e; --ink3:#3d5244;
+      --muted:#7a8c7e; --muted2:#a8b8ab;
+      --border:#dce8df; --border2:#c8d8cb;
+      --surf:#f2f7f3; --surf2:#e8f0ea;
+      /* roster position colors */
+      --pos-qb:#e8453c; --pos-rb:#2ecc71; --pos-wr:#3498db;
+      --pos-te:#e67e22; --pos-k:#9b59b6; --pos-def:#1abc9c;
+      --pos-flex:#e91e8c; --pos-bn:#a0adb0;
+    }
+    html, body { background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh; }
+
+    /* ── NAV ── */
+    .nav { background:var(--forest); height:62px; display:flex; align-items:center; padding:0 2rem; justify-content:space-between; position:sticky; top:0; z-index:100; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-logo { width:34px; height:34px; object-fit:contain; }
+    .nav-wordmark { font-size:1.15rem; font-weight:800; color:var(--gold2); letter-spacing:-0.01em; }
+    .nav-back { font-size:13px; font-weight:500; color:rgba(255,255,255,0.45); text-decoration:none; display:flex; align-items:center; gap:5px; transition:color .15s; border:none; background:none; cursor:pointer; padding:0; }
+    .nav-back:hover { color:var(--gold2); }
+
+    /* ── LOADING ── */
+    #loadingState { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; gap:1.25rem; }
+    .load-logo-row { display:flex; align-items:center; gap:10px; }
+    .load-logo { width:32px; height:32px; object-fit:contain; }
+    .load-wordmark { font-size:1.3rem; font-weight:800; color:var(--gold); }
+    .load-bar-track { width:200px; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .load-bar-fill { height:100%; background:var(--gold); border-radius:2px; animation:loadprog 2s ease-in-out infinite; }
+    @keyframes loadprog { 0%{width:0%} 60%{width:75%} 100%{width:95%} }
+    .load-msg { font-size:13px; font-weight:500; color:var(--muted); }
+
+    /* ── ERROR STATE ── */
+    #errorState { display:none; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; gap:1rem; text-align:center; padding:2rem; }
+    .error-icon { font-size:2rem; }
+    .error-title { font-size:1.2rem; font-weight:700; color:var(--ink); }
+    .error-msg { font-size:14px; color:var(--muted); max-width:360px; }
+    .error-btn { background:var(--forest); color:var(--gold2); border:none; border-radius:10px; padding:11px 22px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:.5rem; }
+
+    /* ── MAIN CONTENT ── */
+    #dashContent { display:none; }
+    .page-wrap { max-width:1040px; margin:0 auto; padding:0 1.5rem 4rem; }
+
+    /* ── PROFILE HERO ── */
+    .profile-hero { background:var(--forest); padding:2rem 2rem 2.5rem; position:relative; overflow:hidden; }
+    .profile-hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:rgba(201,168,76,0.2); }
+    .profile-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 90% 50%, rgba(201,168,76,0.05) 0%, transparent 60%); pointer-events:none; }
+    .hero-inner { max-width:1040px; margin:0 auto; display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap; position:relative; }
+    .avatar-wrap { flex-shrink:0; position:relative; }
+    .avatar-img { width:72px; height:72px; border-radius:50%; border:2.5px solid var(--gold); object-fit:cover; display:block; background:var(--forest2); }
+    .avatar-initials { width:72px; height:72px; border-radius:50%; border:2.5px solid var(--gold); background:var(--forest2); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:800; color:var(--gold2); flex-shrink:0; }
+    .avatar-status { width:13px; height:13px; background:#22c55e; border:2px solid var(--forest); border-radius:50%; position:absolute; bottom:3px; right:3px; }
+    .hero-info { flex:1; min-width:0; }
+    .hero-name { font-size:1.75rem; font-weight:800; color:var(--white); letter-spacing:-0.02em; line-height:1.1; }
+    .hero-handle { font-size:12px; color:rgba(255,255,255,0.38); margin-top:2px; font-weight:400; }
+    .hero-stats { display:flex; gap:1.75rem; margin-top:1rem; flex-wrap:wrap; }
+    .hstat { display:flex; flex-direction:column; gap:2px; }
+    .hstat-val { font-size:1.25rem; font-weight:800; color:var(--gold2); letter-spacing:-0.02em; line-height:1; }
+    .hstat-lbl { font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
+    .hstat-div { width:1px; height:32px; background:rgba(255,255,255,0.1); align-self:center; }
+
+    /* ── CONTROLS BAR ── */
+    .controls-bar { background:var(--white); border-bottom:1px solid var(--border); padding:0 2rem; }
+    .controls-inner { max-width:1040px; margin:0 auto; display:flex; align-items:center; gap:1rem; height:56px; flex-wrap:wrap; }
+    .ctrl-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+    .ctrl-select { appearance:none; background:var(--surf); border:1.5px solid var(--border); border-radius:8px; padding:7px 32px 7px 12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:var(--ink); outline:none; cursor:pointer; transition:border-color .15s; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%237a8c7e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; min-width:200px; max-width:280px; }
+    .ctrl-select:focus { border-color:var(--green2); }
+    .ctrl-divider { width:1px; height:24px; background:var(--border); }
+    .ctrl-badge { font-size:11px; font-weight:600; background:var(--surf2); color:var(--muted); padding:4px 10px; border-radius:20px; white-space:nowrap; }
+
+    /* ── PAGE BODY ── */
+    .body-wrap { padding:1.5rem 0 0; }
+
+    /* ── SECTION HEADER ── */
+    .section-head { display:flex; align-items:center; gap:12px; margin-bottom:1.1rem; }
+    .section-title { font-size:15px; font-weight:700; color:var(--ink); letter-spacing:-0.01em; }
+    .section-rule { flex:1; height:1px; background:var(--border); }
+    .section-meta { font-size:11px; font-weight:500; color:var(--muted); }
+
+    /* ── RECORD STRIP ── */
+    .record-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:1.5rem; }
+    .rec-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; }
+    .rec-val { font-size:1.5rem; font-weight:800; color:var(--ink); letter-spacing:-0.02em; line-height:1; }
+    .rec-lbl { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+
+    /* ── ROSTER TABLE ── */
+    .roster-card { background:var(--white); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .roster-table { width:100%; border-collapse:collapse; }
+    .roster-table th { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; padding:.65rem 1.1rem; background:var(--surf); border-bottom:1px solid var(--border); text-align:left; }
+    .roster-table th:last-child, .roster-table td:last-child { text-align:right; }
+    .roster-table td { padding:.7rem 1.1rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .roster-table tr:last-child td { border-bottom:none; }
+    .roster-table tr:hover td { background:var(--surf); }
+
+    /* bench section divider row */
+    .bench-divider td { background:var(--surf2); padding:.4rem 1.1rem; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; border-bottom:1px solid var(--border); border-top:2px solid var(--border2); }
+
+    /* position badge */
+    .pos-badge { display:inline-flex; align-items:center; justify-content:center; width:34px; height:22px; border-radius:5px; font-size:10px; font-weight:700; letter-spacing:.04em; flex-shrink:0; }
+    .pos-QB { background:rgba(232,69,60,0.12); color:#c0392b; }
+    .pos-RB { background:rgba(46,204,113,0.12); color:#1e8449; }
+    .pos-WR { background:rgba(52,152,219,0.12); color:#1a6fa8; }
+    .pos-TE { background:rgba(230,126,34,0.12); color:#c0712a; }
+    .pos-K  { background:rgba(155,89,182,0.12); color:#7d3c98; }
+    .pos-DEF,.pos-DST { background:rgba(26,188,156,0.12); color:#148f77; }
+    .pos-FLEX,.pos-WRRB,.pos-RBWR,.pos-WRRBTE,.pos-REC,.pos-SUPER_FLEX { background:rgba(233,30,140,0.12); color:#ad1457; }
+    .pos-BN { background:rgba(160,173,176,0.15); color:#6b7c6e; }
+    .pos-IR { background:rgba(232,69,60,0.08); color:#c0392b; }
+
+    /* player name cell */
+    .player-cell { display:flex; align-items:center; gap:10px; }
+    .player-thumb { width:36px; height:36px; border-radius:50%; object-fit:cover; background:var(--surf2); flex-shrink:0; border:1px solid var(--border); }
+    .player-thumb-initials { width:36px; height:36px; border-radius:50%; background:var(--surf2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--muted); flex-shrink:0; }
+    .player-name { font-size:13px; font-weight:600; color:var(--ink); line-height:1.2; }
+    .player-team { font-size:11px; color:var(--muted); font-weight:400; margin-top:1px; }
+    .player-status { display:inline-block; font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; margin-left:5px; text-transform:uppercase; letter-spacing:.05em; }
+    .status-OUT { background:rgba(232,69,60,0.12); color:#c0392b; }
+    .status-Q   { background:rgba(230,126,34,0.12); color:#c0712a; }
+    .status-IR  { background:rgba(155,89,182,0.12); color:#7d3c98; }
+    .status-D   { background:rgba(232,69,60,0.12); color:#c0392b; }
+
+    /* empty/loading states */
+    .roster-empty { padding:3rem 1.5rem; text-align:center; color:var(--muted); font-size:13px; }
+    .roster-loading { padding:2.5rem 1.5rem; text-align:center; }
+    .mini-spinner { width:24px; height:24px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto .75rem; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* all-leagues placeholder */
+    .all-leagues-msg { padding:3rem 1.5rem; text-align:center; }
+    .all-leagues-icon { font-size:2rem; margin-bottom:.75rem; }
+    .all-leagues-title { font-size:15px; font-weight:700; color:var(--ink); margin-bottom:.4rem; }
+    .all-leagues-sub { font-size:13px; color:var(--muted); }
+
+    /* responsive */
+    @media(max-width:640px) {
+      .profile-hero { padding:1.5rem; }
+      .controls-inner { height:auto; padding:.75rem 0; gap:.6rem; }
+      .ctrl-select { min-width:160px; }
+      .body-wrap { padding:1rem 0 0; }
+      .roster-table th, .roster-table td { padding:.6rem .75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <img src="images/logo.png" class="nav-logo" alt="Prospect Logo" />
+      <span class="nav-wordmark">Prospect</span>
+    </a>
+    <button class="nav-back" onclick="window.location.href='/'">← Back</button>
+  </nav>
+
+  <!-- LOADING STATE -->
+  <div id="loadingState">
+    <div class="load-logo-row">
+      <img src="images/logo.png" class="load-logo" alt="Prospect" />
+      <span class="load-wordmark">Prospect</span>
+    </div>
+    <div class="load-bar-track"><div class="load-bar-fill"></div></div>
+    <div class="load-msg" id="loadMsg">Loading your profile...</div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="errorState">
+    <div class="error-icon">⚠</div>
+    <div class="error-title">Couldn't load your dashboard</div>
+    <div class="error-msg" id="errorMsgText">Something went wrong connecting to Sleeper. Please go back and try again.</div>
+    <button class="error-btn" onclick="window.location.href='/'">← Go Back</button>
+  </div>
+
+  <!-- DASHBOARD CONTENT -->
+  <div id="dashContent">
+
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="hero-inner">
+        <div class="avatar-wrap">
+          <div id="avatarEl"></div>
+          <div class="avatar-status"></div>
+        </div>
+        <div class="hero-info">
+          <div class="hero-name" id="heroName">—</div>
+          <div class="hero-handle" id="heroHandle">@sleeper</div>
+          <div class="hero-stats" id="heroStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS BAR -->
+    <div class="controls-bar">
+      <div class="controls-inner">
+        <span class="ctrl-label">League</span>
+        <select class="ctrl-select" id="leagueSelect" onchange="onLeagueChange()">
+          <option value="ALL">All Leagues</option>
+        </select>
+        <div class="ctrl-divider"></div>
+        <span class="ctrl-label">Season</span>
+        <select class="ctrl-select" id="seasonSelect" onchange="onSeasonChange()" style="min-width:140px;max-width:160px">
+          <option value="ALL">All Seasons</option>
+          <option value="2025" selected>2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+        </select>
+        <div class="ctrl-divider"></div>
+        <span class="ctrl-badge" id="leagueCountBadge">Loading...</span>
+      </div>
+    </div>
+
+    <!-- PAGE BODY -->
+    <div class="page-wrap">
+      <div class="body-wrap">
+
+        <!-- RECORD STRIP (shown when a league is selected) -->
+        <div id="recordStrip" style="display:none; margin-bottom:1.5rem;">
+          <div class="record-strip" id="recordCards"></div>
+        </div>
+
+        <!-- ROSTER SECTION -->
+        <div class="section-head">
+          <span class="section-title" id="rosterSectionTitle">Roster</span>
+          <div class="section-rule"></div>
+          <span class="section-meta" id="rosterMeta"></span>
+        </div>
+        <div class="roster-card">
+          <div id="rosterContent">
+            <div class="roster-loading">
+              <div class="mini-spinner"></div>
+              <div style="font-size:13px;color:var(--muted)">Loading roster...</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end dashContent -->
+
+  <script>
+    const API = 'https://api.sleeper.app/v1';
+    const CDN = 'https://sleepercdn.com/avatars/thumbs/';
+    const PLAYER_CDN = 'https://sleepercdn.com/content/nfl/players/thumb/';
+
+    let currentUser = null;
+    let allLeagues = [];
+    let allPlayers = {};
+    let currentLeagueId = 'ALL';
+    let currentSeason = '2025';
+
+    // ── POSITION DISPLAY MAPPING ──
+    const POS_LABEL = {
+      QB:'QB', RB:'RB', WR:'WR', TE:'TE', K:'K',
+      DEF:'DEF', DST:'DEF', FLEX:'FLEX',
+      WRRB:'FLEX', RBWR:'FLEX', WRRBTE:'FLEX',
+      REC:'FLEX', SUPER_FLEX:'SF', BN:'BN', IR:'IR'
+    };
+    const STATUS_LABELS = { Out:'OUT', Questionable:'Q', 'Injured Reserve':'IR', Doubtful:'D' };
+
+    function setLoadMsg(msg) { document.getElementById('loadMsg').textContent = msg; }
+
+    function showError(msg) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'flex';
+      document.getElementById('errorMsgText').textContent = msg;
+    }
+
+    function showDash() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'none';
+      document.getElementById('dashContent').style.display = 'block';
+    }
+
+    async function fetchJ(url) {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }
+
+    // ── INIT ──
+    async function init() {
+      // Get user from sessionStorage (passed from index.html)
+      const stored = sessionStorage.getItem('prospect_user');
+      if (!stored) {
+        // Allow direct URL access with ?user= param
+        const params = new URLSearchParams(window.location.search);
+        const uname = params.get('user');
+        if (uname) {
+          try {
+            setLoadMsg('Looking up ' + uname + '...');
+            currentUser = await fetchJ(`${API}/user/${uname}`);
+          } catch(e) { return showError('Could not find user "' + uname + '". Please go back and try again.'); }
+        } else {
+          return showError('No user data found. Please go back and enter your username.');
+        }
+      } else {
+        currentUser = JSON.parse(stored);
+      }
+
+      if (!currentUser || !currentUser.user_id) return showError('Invalid user data. Please go back and try again.');
+
+      renderHero(currentUser);
+      setLoadMsg('Loading your leagues...');
+
+      try {
+        // Load leagues for current season
+        allLeagues = await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
+        if (!Array.isArray(allLeagues)) allLeagues = [];
+      } catch(e) { allLeagues = []; }
+
+      populateLeagueDropdown(allLeagues);
+      setLoadMsg('Fetching player data...');
+
+      // Load players (lightweight — just need names/positions)
+      try {
+        allPlayers = await fetchJ(`${API}/players/nfl`);
+      } catch(e) { allPlayers = {}; }
+
+      showDash();
+
+      // Default to first league if available, otherwise show ALL
+      if (allLeagues.length > 0) {
+        document.getElementById('leagueSelect').value = allLeagues[0].league_id;
+        currentLeagueId = allLeagues[0].league_id;
+        await loadLeagueData(currentLeagueId);
+      } else {
+        renderAllLeaguesState();
+      }
+    }
+
+    // ── RENDER HERO ──
+    function renderHero(user) {
+      document.title = `${user.display_name || user.username} — Prospect`;
+      document.getElementById('heroName').textContent = user.display_name || user.username;
+      document.getElementById('heroHandle').textContent = '@' + (user.username || '');
+
+      const avatarEl = document.getElementById('avatarEl');
+      if (user.avatar) {
+        const img = document.createElement('img');
+        img.className = 'avatar-img';
+        img.src = CDN + user.avatar;
+        img.alt = user.display_name || user.username;
+        img.onerror = () => { avatarEl.innerHTML = initialsAvatar(user); };
+        avatarEl.appendChild(img);
+      } else {
+        avatarEl.innerHTML = initialsAvatar(user);
+      }
+    }
+
+    function initialsAvatar(user) {
+      const name = user.display_name || user.username || '?';
+      const initials = name.slice(0,2).toUpperCase();
+      return `<div class="avatar-initials">${initials}</div>`;
+    }
+
+    function updateHeroStats(wins, losses, pf, rank, total) {
+      const statsEl = document.getElementById('heroStats');
+      const pfNum = parseFloat(pf || 0).toFixed(1);
+      const items = [
+        { val: `${wins}–${losses}`, lbl: 'Record' },
+        { val: `${rank}/${total}`, lbl: 'Standing' },
+        { val: pfNum, lbl: 'Points For' },
+      ];
+      statsEl.innerHTML = items.map((s, i) =>
+        `${i > 0 ? '<div class="hstat-div"></div>' : ''}
+        <div class="hstat">
+          <span class="hstat-val">${s.val}</span>
+          <span class="hstat-lbl">${s.lbl}</span>
+        </div>`
+      ).join('');
+    }
+
+    // ── LEAGUE DROPDOWN ──
+    function populateLeagueDropdown(leagues) {
+      const sel = document.getElementById('leagueSelect');
+      // Clear existing options except "All Leagues"
+      while (sel.options.length > 1) sel.remove(1);
+
+      leagues.forEach(lg => {
+        const opt = document.createElement('option');
+        opt.value = lg.league_id;
+        opt.textContent = lg.name || 'Unnamed League';
+        sel.appendChild(opt);
+      });
+
+      const badge = document.getElementById('leagueCountBadge');
+      badge.textContent = leagues.length === 0
+        ? 'No leagues found'
+        : `${leagues.length} league${leagues.length !== 1 ? 's' : ''} · ${currentSeason}`;
+    }
+
+    // ── ON LEAGUE CHANGE ──
+    async function onLeagueChange() {
+      const sel = document.getElementById('leagueSelect');
+      currentLeagueId = sel.value;
+
+      if (currentLeagueId === 'ALL') {
+        document.getElementById('recordStrip').style.display = 'none';
+        document.getElementById('heroStats').innerHTML = '';
+        renderAllLeaguesState();
+        return;
+      }
+      await loadLeagueData(currentLeagueId);
+    }
+
+    // ── ON SEASON CHANGE ── (UI only for now)
+    async function onSeasonChange() {
+      const sel = document.getElementById('seasonSelect');
+      currentSeason = sel.value;
+
+      // Reload leagues for new season (unless ALL)
+      if (currentSeason === 'ALL') {
+        document.getElementById('leagueCountBadge').textContent = 'All seasons';
+        return; // placeholder — aggregation coming later
+      }
+
+      setRosterLoading();
+      try {
+        allLeagues = await fetchJ(`${API}/user/${currentUser.user_id}/leagues/nfl/${currentSeason}`);
+        if (!Array.isArray(allLeagues)) allLeagues = [];
+      } catch(e) { allLeagues = []; }
+
+      populateLeagueDropdown(allLeagues);
+
+      // Reset to first league
+      if (allLeagues.length > 0) {
+        document.getElementById('leagueSelect').value = allLeagues[0].league_id;
+        currentLeagueId = allLeagues[0].league_id;
+        await loadLeagueData(currentLeagueId);
+      } else {
+        document.getElementById('recordStrip').style.display = 'none';
+        document.getElementById('heroStats').innerHTML = '';
+        renderAllLeaguesState();
+      }
+    }
+
+    // ── LOAD LEAGUE DATA ──
+    async function loadLeagueData(leagueId) {
+      setRosterLoading();
+      document.getElementById('recordStrip').style.display = 'none';
+
+      try {
+        const [rosters, leagueUsers, leagueInfo] = await Promise.all([
+          fetchJ(`${API}/league/${leagueId}/rosters`),
+          fetchJ(`${API}/league/${leagueId}/users`),
+          fetchJ(`${API}/league/${leagueId}`)
+        ]);
+
+        // Find the user's roster
+        const myRoster = rosters.find(r => r.owner_id === currentUser.user_id);
+        if (!myRoster) {
+          renderRosterError('Could not find your roster in this league.');
+          return;
+        }
+
+        // Standings
+        const sorted = [...rosters].sort((a, b) => {
+          const aw = a.settings?.wins || 0, bw = b.settings?.wins || 0;
+          if (bw !== aw) return bw - aw;
+          return parseFloat(b.settings?.fpts || 0) - parseFloat(a.settings?.fpts || 0);
+        });
+        const myRank = sorted.findIndex(r => r.roster_id === myRoster.roster_id) + 1;
+        const wins = myRoster.settings?.wins || 0;
+        const losses = myRoster.settings?.losses || 0;
+        const pf = parseFloat(myRoster.settings?.fpts || 0) + parseFloat((myRoster.settings?.fpts_decimal || 0) / 100);
+
+        updateHeroStats(wins, losses, pf, myRank, rosters.length);
+        renderRecordStrip(wins, losses, myRoster.settings?.ties || 0, pf, myRank, rosters.length, leagueInfo);
+
+        // Find team name
+        const leagueUser = leagueUsers.find(u => u.user_id === currentUser.user_id);
+        const teamName = leagueUser?.metadata?.team_name || leagueInfo?.name || 'Your Team';
+
+        // Update section title
+        document.getElementById('rosterSectionTitle').textContent = 'Active Roster';
+        document.getElementById('rosterMeta').textContent =
+          `${(myRoster.players || []).length} players · ${leagueInfo?.name || ''}`;
+
+        // Get roster positions config
+        const rosterPositions = leagueInfo?.roster_positions || [];
+        renderRoster(myRoster, rosterPositions, allPlayers);
+
+      } catch(e) {
+        renderRosterError('Failed to load league data. Please try again.');
+        console.error(e);
+      }
+    }
+
+    // ── RENDER RECORD STRIP ──
+    function renderRecordStrip(w, l, t, pf, rank, total, league) {
+      const cards = [
+        { val: `${w}–${l}${t ? '–' + t : ''}`, lbl: 'Record' },
+        { val: `${rank} / ${total}`, lbl: 'Standing' },
+        { val: parseFloat(pf).toFixed(1), lbl: 'Points For' },
+        { val: `${Math.round((w / (w + l || 1)) * 100)}%`, lbl: 'Win Rate' },
+      ];
+      document.getElementById('recordCards').innerHTML = cards.map(c =>
+        `<div class="rec-card">
+          <div class="rec-val">${c.val}</div>
+          <div class="rec-lbl">${c.lbl}</div>
+        </div>`
+      ).join('');
+      document.getElementById('recordStrip').style.display = 'block';
+    }
+
+    // ── RENDER ROSTER ──
+    function renderRoster(roster, rosterPositions, players) {
+      const starters = roster.starters || [];
+      const allPlayerIds = roster.players || [];
+      const irSlot = roster.reserve || [];
+
+      // Separate starters and bench
+      const benchIds = allPlayerIds.filter(id => !starters.includes(id) && !irSlot.includes(id));
+
+      let rows = '';
+
+      // Header
+      rows += `<tr>
+        <th style="width:44px">Slot</th>
+        <th>Player</th>
+        <th>Position</th>
+        <th>Team</th>
+        <th>Status</th>
+      </tr>`;
+
+      // Build starter slots from rosterPositions
+      const starterSlotDefs = rosterPositions.filter(p => p !== 'BN' && p !== 'IR');
+
+      // Map starter IDs to their slot position
+      starters.forEach((playerId, idx) => {
+        const slotPos = starterSlotDefs[idx] || 'FLEX';
+        rows += buildPlayerRow(playerId, slotPos, players, false);
+      });
+
+      // Bench divider
+      if (benchIds.length > 0) {
+        rows += `<tr class="bench-divider"><td colspan="5">Bench</td></tr>`;
+        benchIds.forEach(id => {
+          rows += buildPlayerRow(id, 'BN', players, false);
+        });
+      }
+
+      // IR divider
+      if (irSlot.length > 0) {
+        rows += `<tr class="bench-divider"><td colspan="5">Injured Reserve</td></tr>`;
+        irSlot.forEach(id => {
+          rows += buildPlayerRow(id, 'IR', players, false);
+        });
+      }
+
+      if (starters.length === 0 && benchIds.length === 0) {
+        document.getElementById('rosterContent').innerHTML =
+          `<div class="roster-empty">No players found on this roster.</div>`;
+        return;
+      }
+
+      document.getElementById('rosterContent').innerHTML =
+        `<table class="roster-table"><thead>${rows.slice(0, rows.indexOf('</tr>') + 5)}</thead><tbody>${rows.slice(rows.indexOf('</tr>') + 5)}</tbody></table>`;
+
+      // Simpler approach — just build the whole table at once
+      document.getElementById('rosterContent').innerHTML =
+        `<table class="roster-table">
+          <thead>
+            <tr>
+              <th style="width:44px">Slot</th>
+              <th>Player</th>
+              <th style="width:80px">Pos</th>
+              <th style="width:80px">NFL Team</th>
+              <th style="width:70px">Status</th>
+            </tr>
+          </thead>
+          <tbody>${buildRosterRows(starters, starterSlotDefs, benchIds, irSlot, players)}</tbody>
+        </table>`;
+    }
+
+    function buildRosterRows(starters, slotDefs, bench, ir, players) {
+      let html = '';
+      starters.forEach((id, i) => {
+        html += buildPlayerRow(id, slotDefs[i] || 'FLEX', players);
+      });
+      if (bench.length > 0) {
+        html += `<tr class="bench-divider"><td colspan="5">Bench · ${bench.length} players</td></tr>`;
+        bench.forEach(id => { html += buildPlayerRow(id, 'BN', players); });
+      }
+      if (ir.length > 0) {
+        html += `<tr class="bench-divider"><td colspan="5">Injured Reserve · ${ir.length} players</td></tr>`;
+        ir.forEach(id => { html += buildPlayerRow(id, 'IR', players); });
+      }
+      return html;
+    }
+
+    function buildPlayerRow(playerId, slot, players) {
+      const p = players[playerId] || {};
+      const name = p.full_name || p.first_name ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : `Player #${playerId}`;
+      const pos = p.position || '—';
+      const team = p.team || 'FA';
+      const injStatus = p.injury_status || '';
+      const statusLabel = STATUS_LABELS[injStatus] || '';
+      const slotLabel = POS_LABEL[slot] || slot;
+      const posClass = `pos-${pos.replace('/','').replace(' ','')}`;
+      const slotClass = `pos-${slot}`;
+      const isDefense = pos === 'DEF' || slot === 'DEF' || slot === 'DST';
+
+      // Player thumbnail — NFL players use Sleeper CDN
+      const thumbUrl = !isDefense && playerId && !/^[A-Z]{2,4}$/.test(playerId)
+        ? PLAYER_CDN + playerId + '.jpg'
+        : null;
+
+      const thumbHtml = thumbUrl
+        ? `<img class="player-thumb" src="${thumbUrl}" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"  />
+           <div class="player-thumb-initials" style="display:none">${getInitials(name)}</div>`
+        : `<div class="player-thumb-initials">${isDefense ? team : getInitials(name)}</div>`;
+
+      const statusHtml = statusLabel
+        ? `<span class="player-status status-${statusLabel}">${statusLabel}</span>`
+        : '';
+
+      return `<tr>
+        <td><span class="pos-badge ${slotClass}">${slotLabel}</span></td>
+        <td>
+          <div class="player-cell">
+            ${thumbHtml}
+            <div>
+              <div class="player-name">${name}${statusHtml}</div>
+              <div class="player-team">${team}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="pos-badge ${posClass}">${pos}</span></td>
+        <td style="font-size:12px;font-weight:500;color:var(--muted)">${team}</td>
+        <td style="font-size:12px;color:${statusLabel ? '#c0392b' : 'var(--muted2)'}">
+          ${statusLabel || '—'}
+        </td>
+      </tr>`;
+    }
+
+    function getInitials(name) {
+      return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    function setRosterLoading() {
+      document.getElementById('rosterContent').innerHTML = `
+        <div class="roster-loading">
+          <div class="mini-spinner"></div>
+          <div style="font-size:13px;color:var(--muted)">Loading roster...</div>
+        </div>`;
+    }
+
+    function renderRosterError(msg) {
+      document.getElementById('rosterContent').innerHTML =
+        `<div class="roster-empty">${msg}</div>`;
+    }
+
+    function renderAllLeaguesState() {
+      document.getElementById('rosterSectionTitle').textContent = 'Roster';
+      document.getElementById('rosterMeta').textContent = '';
+      document.getElementById('rosterContent').innerHTML = `
+        <div class="all-leagues-msg">
+          <div class="all-leagues-icon">🏆</div>
+          <div class="all-leagues-title">Select a league to view your roster</div>
+          <div class="all-leagues-sub">Choose a league from the dropdown above, or select All Leagues to see an aggregated view (coming soon).</div>
+        </div>`;
+    }
+
+    // ── BOOT ──
+    init();
+  </script>
+</body>
+</html>
