@@ -1,199 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prospect — Fantasy Intelligence</title>
-  <meta name="description" content="Prospect evaluates your fantasy football management across five core competencies." />
-  <meta property="og:title" content="Prospect — Fantasy Football Intelligence" />
-  <meta property="og:description" content="Mine the data. Prospect for gold." />
-  <meta property="og:url" content="https://prospectff.com" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <meta name="description" content="Prospect evaluates your fantasy football management across five core competencies."/>
+  <meta property="og:title" content="Prospect — Fantasy Football Intelligence"/>
+  <meta property="og:description" content="Mine the data. Prospect for gold."/>
+  <meta property="og:url" content="https://prospectff.com"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --forest:#1a3d2b; --forest2:#224d37;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --forest:#1a3d2b;--forest2:#224d37;
       --green2:#40916c;
-      --gold:#c9a84c; --gold2:#e0b84f; --gold3:#f4d06f;
-      --cream:#f8faf7; --white:#ffffff;
-      --ink:#0d1b12; --ink2:#2a3b2e;
-      --muted:#7a8c7e; --muted2:#a8b8ab;
-      --border:#dce8df; --surf:#f2f7f3;
+      --gold:#c9a84c;--gold2:#e0b84f;--gold3:#f4d06f;
+      --sand:#e8dcc8;--sand2:#f2ead8;--sand3:#d4c4a0;
+      --cream:#f8faf7;--white:#fff;
+      --ink:#0d1b12;--ink2:#2a3b2e;
+      --muted:#7a8c7e;--muted2:#a8b8ab;
+      --border:#dce8df;--surf:#f2f7f3;
     }
-    html, body { height:100%; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+    html,body{height:100%;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
-    .nav { position:fixed; top:0; left:0; right:0; height:62px; background:var(--forest); display:flex; align-items:center; padding:0 2.5rem; justify-content:space-between; z-index:100; border-bottom:1px solid rgba(255,255,255,0.06); }
-    .nav-brand { display:flex; align-items:center; gap:11px; text-decoration:none; }
-    .nav-logo { width:36px; height:36px; flex-shrink:0; object-fit:contain; display:block; }
-    .nav-wordmark { font-size:1.2rem; font-weight:800; color:var(--gold2); letter-spacing:-0.01em; }
-    .nav-right { display:flex; align-items:center; gap:6px; }
-    .nav-pill { font-size:12px; font-weight:500; color:rgba(255,255,255,0.4); padding:5px 14px; border-radius:20px; border:1px solid transparent; cursor:pointer; transition:color .15s, border-color .15s; text-decoration:none; }
-    .nav-pill:hover { color:var(--gold2); border-color:rgba(201,168,76,0.25); }
+    /* NAV */
+    .nav{position:fixed;top:0;left:0;right:0;height:62px;background:var(--forest);display:flex;align-items:center;padding:0 2.5rem;justify-content:space-between;z-index:100;border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav-brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+    .nav-logo{width:36px;height:36px;flex-shrink:0;object-fit:contain}
+    .nav-wordmark{font-size:1.2rem;font-weight:800;color:var(--gold2);letter-spacing:-0.01em}
+    .nav-right{display:flex;align-items:center;gap:6px}
+    .nav-pill{font-size:12px;font-weight:500;color:rgba(255,255,255,.4);padding:5px 14px;border-radius:20px;border:1px solid transparent;cursor:pointer;transition:color .15s,border-color .15s;text-decoration:none}
+    .nav-pill:hover{color:var(--gold2);border-color:rgba(201,168,76,.25)}
 
-    .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6rem 1.5rem 4rem; position:relative; overflow:hidden; }
-    .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,61,43,0.18) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 60%); pointer-events:none; }
-    .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(26,61,43,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(26,61,43,0.06) 1px, transparent 1px); background-size:48px 48px; pointer-events:none; }
-    .hero-inner { position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; max-width:580px; width:100%; }
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6rem 1.5rem 4rem;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(26,61,43,.18) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(201,168,76,.04) 0%,transparent 60%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(26,61,43,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(26,61,43,.06) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
 
-    .eyebrow { display:flex; align-items:center; gap:10px; margin-bottom:1.5rem; }
-    .eyebrow-line { width:28px; height:1px; background:var(--green2); opacity:0.7; }
-    .eyebrow-text { font-size:11px; font-weight:600; color:var(--green2); letter-spacing:0.18em; text-transform:uppercase; }
+    /* Sand accent strip */
+    .sand-strip{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--sand3),var(--sand2),var(--sand),var(--sand2),var(--sand3))}
 
-    .headline { font-size:clamp(2.6rem,7vw,4.2rem); font-weight:800; color:var(--ink); letter-spacing:-0.03em; line-height:1.05; margin-bottom:1rem; }
-    .headline em { font-style:normal; color:var(--gold); }
-    .subline { font-size:1rem; font-weight:400; color:var(--muted); max-width:400px; line-height:1.7; margin-bottom:2.5rem; }
+    .hero-inner{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;max-width:580px;width:100%}
 
-    .search-card { background:var(--white); border:1px solid var(--border); border-radius:18px; padding:2rem; width:100%; max-width:460px; box-shadow:0 4px 32px rgba(13,27,18,0.07); }
-    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:1.25rem; }
-    .field label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
-    .field-wrap { position:relative; display:flex; align-items:center; }
-    .field-icon { position:absolute; left:14px; width:16px; height:16px; color:var(--muted2); pointer-events:none; }
-    .field input { width:100%; background:var(--surf); border:1.5px solid var(--border); border-radius:10px; padding:13px 14px 13px 40px; font-family:'Inter',sans-serif; font-size:14px; font-weight:500; color:var(--ink); outline:none; transition:border-color .15s, background .15s; }
-    .field input::placeholder { color:var(--muted2); font-weight:400; }
-    .field input:focus { border-color:var(--green2); background:var(--white); }
+    .eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+    .eyebrow-line{width:28px;height:1px;background:var(--green2);opacity:.7}
+    .eyebrow-text{font-size:11px;font-weight:600;color:var(--green2);letter-spacing:.18em;text-transform:uppercase}
 
-    .cta-btn { width:100%; background:var(--forest); color:var(--gold2); border:none; border-radius:11px; padding:15px; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; letter-spacing:-0.01em; cursor:pointer; transition:background .15s, transform .1s; display:flex; align-items:center; justify-content:center; gap:8px; }
-    .cta-btn:hover { background:var(--forest2); }
-    .cta-btn:active { transform:scale(.99); }
-    .cta-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
-    .cta-arrow { font-size:16px; transition:transform .15s; }
-    .cta-btn:hover .cta-arrow { transform:translateX(3px); }
-    .err-msg { font-size:12px; font-weight:500; color:#b84040; margin-top:10px; min-height:18px; text-align:center; }
+    .headline{font-size:clamp(2.6rem,7vw,4.2rem);font-weight:800;color:var(--ink);letter-spacing:-0.03em;line-height:1.05;margin-bottom:1rem}
+    .headline em{font-style:normal;color:var(--gold)}
+    .subline{font-size:1rem;font-weight:400;color:var(--muted);max-width:400px;line-height:1.7;margin-bottom:2.5rem}
 
-    .loading-overlay { display:none; position:fixed; inset:0; background:var(--cream); z-index:200; flex-direction:column; align-items:center; justify-content:center; gap:1.25rem; }
-    .loading-overlay.visible { display:flex; }
-    .load-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:.25rem; }
-    .load-logo { width:32px; height:32px; object-fit:contain; }
-    .load-wordmark { font-size:1.4rem; font-weight:800; color:var(--gold); letter-spacing:-0.01em; }
-    .load-bar-track { width:220px; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
-    .load-bar-fill { height:100%; background:var(--gold); border-radius:2px; animation:loadprog 2.2s ease-in-out infinite; }
-    @keyframes loadprog { 0%{width:0%} 60%{width:78%} 100%{width:96%} }
-    .load-msg { font-size:13px; font-weight:500; color:var(--muted); }
+    /* SEARCH CARD */
+    .search-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:460px;box-shadow:0 4px 32px rgba(13,27,18,.07)}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem}
+    .field label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .field-wrap{position:relative;display:flex;align-items:center}
+    .field-icon{position:absolute;left:14px;width:16px;height:16px;color:var(--muted2);pointer-events:none}
+    .field input{width:100%;background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px 13px 40px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--ink);outline:none;transition:border-color .15s,background .15s}
+    .field input::placeholder{color:var(--muted2);font-weight:400}
+    .field input:focus{border-color:var(--green2);background:var(--white)}
 
-    .feature-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:2rem; }
-    .f-chip { display:flex; align-items:center; gap:6px; background:var(--white); border:1px solid var(--border); border-radius:20px; padding:5px 13px; font-size:12px; font-weight:500; color:var(--ink2); }
-    .f-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .cta-btn{width:100%;background:var(--forest);color:var(--gold2);border:none;border-radius:11px;padding:15px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.01em;cursor:pointer;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .cta-btn:hover{background:var(--forest2)}
+    .cta-btn:active{transform:scale(.99)}
+    .cta-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .cta-arrow{font-size:16px;transition:transform .15s}
+    .cta-btn:hover .cta-arrow{transform:translateX(3px)}
+    .err-msg{font-size:12px;font-weight:500;color:#b84040;margin-top:10px;min-height:18px;text-align:center}
 
-    .footer { text-align:center; padding:2rem; font-size:12px; color:var(--muted2); }
-    .footer span { color:var(--muted); font-weight:500; }
+    /* LOADING */
+    .loading-overlay{display:none;position:fixed;inset:0;background:var(--cream);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
+    .loading-overlay.visible{display:flex}
+    .load-brand{display:flex;align-items:center;gap:10px}
+    .load-logo{width:32px;height:32px;object-fit:contain}
+    .load-wordmark{font-size:1.4rem;font-weight:800;color:var(--gold);letter-spacing:-0.01em}
 
-    @media(max-width:480px) {
-      .nav { padding:0 1.25rem; }
-      .search-card { padding:1.5rem; border-radius:14px; }
-      .headline { font-size:2.4rem; }
+    /* PICKAXE + BOULDER ANIMATION */
+    .mine-scene{position:relative;width:120px;height:80px}
+    /* Boulder — static */
+    .boulder{position:absolute;bottom:0;right:8px}
+    /* Pickaxe — swings from a pivot point at the handle top */
+    .pickaxe-group{position:absolute;bottom:28px;left:4px;transform-origin:right center;animation:swingPick 1s ease-in-out infinite}
+    @keyframes swingPick{
+      0%{transform:rotate(-45deg)}
+      45%{transform:rotate(15deg)}
+      50%{transform:rotate(18deg)}
+      55%{transform:rotate(15deg)}
+      100%{transform:rotate(-45deg)}
+    }
+    /* Sparks appear on impact */
+    .spark-group{position:absolute;bottom:20px;right:12px;opacity:0;animation:sparkBurst 1s ease-out infinite}
+    @keyframes sparkBurst{
+      0%{opacity:0}
+      45%{opacity:0}
+      50%{opacity:1}
+      70%{opacity:0}
+      100%{opacity:0}
+    }
+
+    .load-bar-track{width:220px;height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+    .load-bar-fill{height:100%;background:var(--gold);border-radius:2px;animation:loadprog 2.2s ease-in-out infinite}
+    @keyframes loadprog{0%{width:0%}60%{width:78%}100%{width:96%}}
+    .load-msg{font-size:13px;font-weight:500;color:var(--muted)}
+
+    /* CHIPS */
+    .feature-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:2rem}
+    .f-chip{display:flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:500;color:var(--ink2)}
+    .f-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+    /* Sand accent on chips */
+    .f-chip.sand-chip{background:var(--sand2);border-color:var(--sand3);color:var(--ink2)}
+
+    .footer{text-align:center;padding:2rem;font-size:12px;color:var(--muted2)}
+    .footer span{color:var(--muted);font-weight:500}
+
+    @media(max-width:480px){
+      .nav{padding:0 1.25rem}
+      .search-card{padding:1.5rem;border-radius:14px}
+      .headline{font-size:2.4rem}
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
-    <a href="/" class="nav-brand">
-      <img src="images/logo.png" class="nav-logo" alt="Prospect Logo" />
-      <span class="nav-wordmark">Prospect</span>
-    </a>
-    <div class="nav-right">
-      <a href="#" class="nav-pill">How it works</a>
-      <a href="#" class="nav-pill">About</a>
-    </div>
-  </nav>
+<nav class="nav">
+  <a href="/" class="nav-brand">
+    <img src="images/logo.png" class="nav-logo" alt="Prospect Logo"/>
+    <span class="nav-wordmark">Prospect</span>
+  </a>
+  <div class="nav-right">
+    <a href="#" class="nav-pill">How it works</a>
+    <a href="#" class="nav-pill">About</a>
+  </div>
+</nav>
 
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="load-logo-row">
-      <img src="images/logo.png" class="load-logo" alt="Prospect Logo" />
-      <span class="load-wordmark">Prospect</span>
-    </div>
-    <div class="load-bar-track"><div class="load-bar-fill"></div></div>
-    <div class="load-msg" id="loadMsg">Looking up your profile...</div>
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="load-brand">
+    <img src="images/logo.png" class="load-logo" alt="Prospect"/>
+    <span class="load-wordmark">Prospect</span>
   </div>
 
-  <main class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-grid"></div>
-    <div class="hero-inner">
-
-      <div class="eyebrow">
-        <span class="eyebrow-line"></span>
-        <span class="eyebrow-text">Fantasy Football Intelligence</span>
-        <span class="eyebrow-line"></span>
-      </div>
-
-      <h1 class="headline">Mine the data.<br>Prospect for <em>gold.</em></h1>
-      <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
-
-      <div class="search-card">
-        <div class="field">
-          <label>Sleeper Username</label>
-          <div class="field-wrap">
-            <svg class="field-icon" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.3"/>
-              <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-            <input type="text" id="usernameInput" placeholder="e.g. fantasychamp99"
-              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-          </div>
-        </div>
-        <button class="cta-btn" id="runBtn" onclick="runReport()">
-          Begin Prospecting <span class="cta-arrow">→</span>
-        </button>
-        <div class="err-msg" id="errMsg"></div>
-      </div>
-
-      <div class="feature-row">
-        <div class="f-chip"><span class="f-dot" style="background:#1a3d2b"></span>Draft Grade</div>
-        <div class="f-chip"><span class="f-dot" style="background:#40916c"></span>Free Agency</div>
-        <div class="f-chip"><span class="f-dot" style="background:#a0adb0"></span>Trades</div>
-        <div class="f-chip"><span class="f-dot" style="background:#c9a84c"></span>Start / Sit</div>
-        <div class="f-chip"><span class="f-dot" style="background:#f4d06f"></span>Roster Optimization</div>
-      </div>
-
+  <!-- Pickaxe swinging at boulder -->
+  <div class="mine-scene">
+    <!-- Boulder -->
+    <div class="boulder">
+      <svg width="52" height="44" viewBox="0 0 52 44" fill="none">
+        <ellipse cx="26" cy="32" rx="24" ry="12" fill="#b0a898" opacity=".3"/>
+        <path d="M6 38 Q4 20 14 10 Q22 2 34 4 Q46 6 48 18 Q50 30 42 38 Z" fill="#8c7e6e"/>
+        <path d="M14 10 Q22 2 34 4 Q42 6 46 14 Q32 8 20 14 Z" fill="#a09080"/>
+        <path d="M30 8 Q36 12 38 22" stroke="#6e6258" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        <path d="M18 18 Q16 26 20 34" stroke="#6e6258" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+      </svg>
     </div>
-  </main>
+    <!-- Pickaxe handle + head -->
+    <div class="pickaxe-group">
+      <svg width="70" height="22" viewBox="0 0 70 22" fill="none">
+        <!-- handle -->
+        <line x1="8" y1="18" x2="62" y2="4" stroke="#7a4a1a" stroke-width="3" stroke-linecap="round"/>
+        <!-- head -->
+        <path d="M58 5 L66 0 L68 4 L62 8 Z" fill="#b0b8c0" stroke="#8899a8" stroke-width=".5"/>
+        <path d="M58 5 L54 10 L57 12 L62 8 Z" fill="#c8d0d8" stroke="#a0a8b0" stroke-width=".5"/>
+      </svg>
+    </div>
+    <!-- Sparks on impact -->
+    <div class="spark-group">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <line x1="10" y1="10" x2="18" y2="4" stroke="#f4d06f" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="10" x2="18" y2="12" stroke="#f4d06f" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="10" x2="12" y2="2" stroke="#e0b84f" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="10" cy="10" r="2" fill="#f4d06f" opacity=".8"/>
+      </svg>
+    </div>
+  </div>
 
-  <footer class="footer">
-    <span>Prospect</span> · Powered by Sleeper API · prospectff.com
-  </footer>
+  <div class="load-bar-track"><div class="load-bar-fill"></div></div>
+  <div class="load-msg" id="loadMsg">Looking up your profile...</div>
+</div>
 
-  <script>
-    const API = 'https://api.sleeper.app/v1';
+<main class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="sand-strip"></div>
+  <div class="hero-inner">
 
-    function setErr(msg) {
-      const el = document.getElementById('errMsg');
-      el.textContent = msg;
-      el.style.color = '#b84040';
-      document.getElementById('runBtn').disabled = false;
-      document.getElementById('loadingOverlay').classList.remove('visible');
-    }
+    <div class="eyebrow">
+      <span class="eyebrow-line"></span>
+      <span class="eyebrow-text">Fantasy Football Intelligence</span>
+      <span class="eyebrow-line"></span>
+    </div>
 
-    async function fetchJ(url) {
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }
+    <h1 class="headline">Mine the data.<br>Prospect for <em>gold.</em></h1>
+    <p class="subline">Prospect evaluates your fantasy football management across five core competencies.</p>
 
-    async function runReport() {
-      const username = document.getElementById('usernameInput').value.trim();
-      document.getElementById('errMsg').textContent = '';
-      if (!username) return setErr('Please enter your Sleeper username.');
+    <div class="search-card">
+      <div class="field">
+        <label>Sleeper Username</label>
+        <div class="field-wrap">
+          <svg class="field-icon" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="text" id="usernameInput" placeholder="e.g. fantasychamp99"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+        </div>
+      </div>
+      <button class="cta-btn" id="runBtn" onclick="runReport()">
+        Begin Prospecting <span class="cta-arrow">→</span>
+      </button>
+      <div class="err-msg" id="errMsg"></div>
+    </div>
 
-      document.getElementById('runBtn').disabled = true;
-      document.getElementById('loadingOverlay').classList.add('visible');
-      document.getElementById('loadMsg').textContent = 'Looking up your profile...';
+    <div class="feature-row">
+      <div class="f-chip"><span class="f-dot" style="background:#1a3d2b"></span>Draft Grade</div>
+      <div class="f-chip"><span class="f-dot" style="background:#40916c"></span>Free Agency</div>
+      <div class="f-chip sand-chip"><span class="f-dot" style="background:#8c7e6e"></span>Trades</div>
+      <div class="f-chip"><span class="f-dot" style="background:#c9a84c"></span>Start / Sit</div>
+      <div class="f-chip"><span class="f-dot" style="background:#f4d06f"></span>Roster Optimization</div>
+    </div>
 
-      try {
-        const user = await fetchJ(`${API}/user/${username}`);
-        if (!user || !user.user_id) throw new Error('Username not found. Check your Sleeper username and try again.');
-        sessionStorage.setItem('prospect_user', JSON.stringify(user));
-        window.location.href = '/dashboard.html';
-      } catch (e) {
-        setErr(e.message || 'Something went wrong. Please try again.');
-      }
-    }
+  </div>
+</main>
 
-    document.getElementById('usernameInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') runReport();
-    });
-  </script>
+<footer class="footer">
+  <span>Prospect</span> · Powered by Sleeper API · prospectff.com
+</footer>
+
+<script>
+  const API='https://api.sleeper.app/v1';
+  function setErr(msg){
+    const el=document.getElementById('errMsg');
+    el.textContent=msg;el.style.color='#b84040';
+    document.getElementById('runBtn').disabled=false;
+    document.getElementById('loadingOverlay').classList.remove('visible');
+  }
+  async function fetchJ(url){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+  async function runReport(){
+    const username=document.getElementById('usernameInput').value.trim();
+    document.getElementById('errMsg').textContent='';
+    if(!username)return setErr('Please enter your Sleeper username.');
+    document.getElementById('runBtn').disabled=true;
+    document.getElementById('loadingOverlay').classList.add('visible');
+    document.getElementById('loadMsg').textContent='Looking up your profile...';
+    try{
+      const user=await fetchJ(`${API}/user/${username}`);
+      if(!user||!user.user_id)throw new Error('Username not found. Check your Sleeper username and try again.');
+      sessionStorage.setItem('prospect_user',JSON.stringify(user));
+      window.location.href='/dashboard.html';
+    }catch(e){setErr(e.message||'Something went wrong. Please try again.')}
+  }
+  document.getElementById('usernameInput').addEventListener('keydown',e=>{if(e.key==='Enter')runReport()});
+</script>
 </body>
 </html>
